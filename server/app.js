@@ -1,7 +1,9 @@
 const express = require('express');
-const router = require('./routes/route');
+const route = require('./src/routes/route');
 
 const app = express();
-app.use(router);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(route);
 
 module.exports = app;
