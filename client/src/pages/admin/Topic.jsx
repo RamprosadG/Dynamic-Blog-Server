@@ -38,7 +38,7 @@ const Topic = () => {
     <>
       <div className="d-flex justify-content-center my-5">
         {navigate && <Navigate to="/admin/home" />}
-        <Card style={{ width: "30rem" }}>
+        <Card style={{ width: "50%" }}>
           <Card.Body>
             <Card.Title className="text-center">Add a new topic</Card.Title>
 

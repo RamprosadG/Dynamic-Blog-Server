@@ -8,6 +8,8 @@ import AdminTopic from "./pages/admin/Topic";
 import Error from "./pages/user/Error";
 import { Container, Nav } from "react-bootstrap";
 import Header from "./components/Layout";
+import LoginPage from "./pages/user/Login";
+import RegisterPage from "./pages/user/Register";
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
           <Routes>
             <Route path="/" Component={UserHome} />
             <Route path="/user/blog" Component={UserBlog} />
+            <Route path="/user/login" Component={LoginPage} />
+            <Route path="/user/register" Component={RegisterPage} />
             <Route path="/admin/home" Component={AdminHome} />
             <Route path="/admin/blog" Component={AdminBlog} />
             <Route path="/admin/topic" Component={AdminTopic} />
