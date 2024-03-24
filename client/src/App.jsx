@@ -1,35 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminHome from "./pages/admin/Home";
+import AdminBlog from "./pages/admin/Blog";
+import UserHome from "./pages/user/Home";
+import UserBlog from "./pages/user/Blog";
+import AdminTopic from "./pages/admin/Topic";
+import Error from "./pages/user/Error";
+import { Container, Nav } from "react-bootstrap";
+import Header from "./components/Layout";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Container>
+        <Header />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" Component={UserHome} />
+            <Route path="/user/blog" Component={UserBlog} />
+            <Route path="/admin/home" Component={AdminHome} />
+            <Route path="/admin/blog" Component={AdminBlog} />
+            <Route path="/admin/topic" Component={AdminTopic} />
+            <Route path="*" Component={Error} />
+          </Routes>
+        </BrowserRouter>
+      </Container>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
