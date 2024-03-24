@@ -15,6 +15,20 @@ exports.getTopicById = async (id) => {
   }
 };
 
+exports.allTopic = async () => {
+  const sql = new Client(postgresql);
+  const query = `SELECT * FROM public.topic`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+    return result.rows;
+  } catch (err) {
+    return null;
+  }
+};
+
 exports.getTopicName = async (name) => {
   const sql = new Client(postgresql);
   const query = `SELECT name FROM public.topic WHERE name = '${name}'`;

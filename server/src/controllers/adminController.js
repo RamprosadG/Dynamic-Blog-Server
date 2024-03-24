@@ -8,6 +8,7 @@ const {
 } = require("../models/blogModel");
 const {
   getTopicById,
+  allTopic,
   getTopicName,
   addNewTopic,
   updateExistingTopic,
@@ -33,6 +34,17 @@ exports.getTopic = async (req, res) => {
     return;
   }
   res.json({ message: "Found the topic successfully.", data: result });
+};
+
+exports.getAllTopic = async (req, res) => {
+  const result = await allTopic();
+
+  if (!result) {
+    res.json({ message: "Internal server error." });
+    return;
+  }
+
+  res.json({ message: "All topic are fetched successfully.", data: result });
 };
 
 exports.addTopic = async (req, res) => {
@@ -141,41 +153,43 @@ exports.getBlog = async (req, res) => {
 };
 
 exports.addBlog = async (req, res) => {
-  const title = req.body["title"];
-  const description = req.body["title"];
+  const title = req.body.title;
+  const description = req.body.description;
+  const topicId = req.body.topicId;
 
-  if (!title || !description) {
-    res.json({ message: "Title and Description are required." });
+  if (!title || !description || !topicId || description === "<p><br></p>") {
+    res.json({ message: "Topic, title and description are required." });
     return;
   }
   const existingTitle = await getBlogTitle(title);
 
   if (existingTitle === title) {
-    res.json({ message: "The title already exists" });
+    res.json({ message: "The title already exists." });
     return;
   }
-  const existingDescription = await getBlogDescription(title);
+  const existingDescription = await getBlogDescription(description);
 
   if (existingDescription === description) {
-    res.json({ message: "The description already exists" });
+    res.json({ message: "The description already exists." });
     return;
   }
   const result = await addNewBlog(req.body);
 
   if (!result) {
-    res.json({ message: "Internal server error" });
+    res.json({ message: "Internal server error." });
     return;
   }
-  res.json({ message: "The blog is added successfully" });
+  res.json({ message: "The blog is added successfully." });
 };
 
 exports.updateBlog = async (req, res) => {
   const id = req.body.id;
   const description = req.body.description;
   const title = req.body.title;
+  const topic = req.body.topic;
 
-  if (!title || !description) {
-    res.json({ message: "The title and description are required." });
+  if (!title || !description || !topic || description === "<p><br></p>") {
+    res.json({ message: "The title, topic and description are required." });
     return;
   }
   const existingTitle = await getBlogTitle(title);
@@ -207,11 +221,11 @@ exports.updateBlog = async (req, res) => {
     res.json({ message: "Internal server error." });
     return;
   }
-  res.json({ message: "Blog is updated successfully" });
+  res.json({ message: "The blog is updated successfully." });
 };
 
 exports.deleteBlog = async (req, res) => {
-  const id = req.body["id"];
+  const id = req.body.id;
 
   if (!id) {
     res.json({ message: "Bad request" });
@@ -235,4 +249,15 @@ exports.deleteBlog = async (req, res) => {
     return;
   }
   res.json({ message: "Blog is deleted successfully" });
+};
+
+exports.getAllBlog = async (req, res) => {
+  const result = await allBlog();
+
+  if (!result) {
+    res.json({ message: "Internal server error." });
+    return;
+  }
+
+  res.json({ message: "All blogs are fetched successfully.", data: result });
 };

@@ -3,7 +3,7 @@ const postgresql = require("../config/dbConfig");
 
 exports.getBlogById = async (id) => {
   const sql = new Client(postgresql);
-  const query = `SELECT * FROM public."Blog" WHERE "Id" = '${id}'`;
+  const query = `SELECT * FROM public.blog WHERE id = '${id}'`;
 
   try {
     await sql.connect();
@@ -17,7 +17,7 @@ exports.getBlogById = async (id) => {
 
 exports.getBlogTitle = async (title) => {
   const sql = new Client(postgresql);
-  const query = `SELECT "Title" FROM public."Blog" WHERE "Title" = '${title}'`;
+  const query = `SELECT title FROM public.blog WHERE title = '${title}'`;
 
   try {
     await sql.connect();
@@ -26,7 +26,7 @@ exports.getBlogTitle = async (title) => {
     if (!result.rows.length) {
       return null;
     }
-    const blogTitle = result.rows[0]["Title"];
+    const blogTitle = result.rows[0].title;
     return blogTitle;
   } catch (err) {
     return null;
@@ -35,7 +35,7 @@ exports.getBlogTitle = async (title) => {
 
 exports.getBlogDescription = async (description) => {
   const sql = new Client(postgresql);
-  const query = `SELECT "Description" FROM public."Blog" WHERE "Description" = '${description}'`;
+  const query = `SELECT description FROM public.blog WHERE description = '${description}'`;
 
   try {
     await sql.connect();
@@ -44,7 +44,7 @@ exports.getBlogDescription = async (description) => {
     if (!result.rows.length) {
       return null;
     }
-    const blogDescription = result.rows[0]["Description"];
+    const blogDescription = result.rows[0].description;
     return blogDescription;
   } catch (err) {
     return null;
@@ -52,15 +52,21 @@ exports.getBlogDescription = async (description) => {
 };
 
 exports.addNewBlog = async (data) => {
+  console.log(data);
   const sql = new Client(postgresql);
-  const title = data["title"];
-  const description = data["description"];
-  const userId = data["userId"];
-  const topicId = data["topicId"];
-  const publishDate = data["publishDate"];
+  const title = data.title;
+  const description = data.description;
+  const userId = data.userId;
+  const topicId = data.topicId;
+  const date = data.date;
+  const publishDate = data.publishDate;
+  const status = data.status;
 
-  const query = `INSERT INTO public."Blog" ("Title", "Description", "PublishDate", "UserId", "TopicId") VALUES ('${title}', '${description}', '${publishDate}', '${userId}', '${topicId}')`;
+  const query = `INSERT INTO public.blog (title, description, publish_date, user_id, topic_id,
+                  date, status) VALUES ('${title}', '${description}', '${publishDate}',
+                  '${userId}', '${topicId}', '${date}', ${status})`;
 
+  console.log(query);
   try {
     await sql.connect();
     await sql.query(query);
@@ -71,15 +77,27 @@ exports.addNewBlog = async (data) => {
   }
 };
 
+exports.allBlog = async () => {
+  const query = `SELECT title, publish_date, user_id, topic_id, date, status FROM public.blog`;
+
+  try {
+    await sql.connect();
+    const data = await sql.query(query);
+    await sql.end();
+    return data.rows;
+  } catch (err) {
+    return false;
+  }
+};
+
 exports.updateExistingBlog = async (data) => {
   const sql = new Client(postgresql);
-  const title = data["title"];
-  const description = data["description"];
-  const userId = data["userId"];
-  const topicId = data["topicId"];
-  const publishDate = data["publishDate"];
+  const id = data.id;
+  const title = data.title;
+  const description = data.description;
+  const topicId = data.topicId;
 
-  const query = `UPDATE public."Blog" SET "Title" = '${title}', "Description" = '${description}', "TopicId" = '${topicId}' WHERE "Id" = '${id}'`;
+  const query = `UPDATE public.blog SET title = '${title}', description = '${description}', topic_id = '${topicId}' WHERE id = '${id}'`;
 
   try {
     await sql.connect();
@@ -93,8 +111,8 @@ exports.updateExistingBlog = async (data) => {
 
 exports.deleteExistingBlog = async (data) => {
   const sql = new Client(postgresql);
-  const id = data["id"];
-  const query = `DELETE FROM public."Topic" WHERE "Id" = '${id}'`;
+  const id = data.id;
+  const query = `DELETE FROM public.blog WHERE id = '${id}'`;
 
   try {
     await sql.connect();
