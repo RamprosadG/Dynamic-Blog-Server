@@ -123,3 +123,72 @@ exports.deleteExistingBlog = async (data) => {
     return false;
   }
 };
+
+exports.getBlogInfoForTable = async (data) => {
+  const sql = new Client(postgresql);
+  const search = data.search.toLowerCase();
+  const sortCol = data.sortCol;
+  const sortDir = data.sortDir;
+  const topic = data.topic;
+  const startDate = data.startDate;
+  const endDate = data.endDate;
+  const status = data.status;
+  const row = data.row;
+  const offSet = row * (data.page - 1);
+
+  let query = ` SELECT
+                blog.title AS title,
+                blog.date AS date,
+                blog.publish_date AS publish_date,
+                CASE WHEN blog.status = 'true' THEN 'Published'
+                ELSE 'Not published' END AS status,
+                users.username AS author,
+                topic.name as topic
+                FROM public.blog
+                LEFT JOIN public.users ON users.id = blog.user_id
+                LEFT JOIN public.topic ON topic.id = blog.topic_id `;
+
+  const filters = [];
+
+  if (search) {
+    filters.push(` (LOWER(blog.title) LIKE '%${search}%'
+                  OR LOWER(topic.name) LIKE '%${search}%' OR LOWER(users.username) LIKE '%${search}%') `);
+  }
+
+  if (status) {
+    filters.push(` blog.status = ${status} `);
+  }
+  if (topic) {
+    filters.push(` topic.id = ${topic} `);
+  }
+  if (startDate) {
+    filters.push(` blog.date >= '${startDate}' `);
+  }
+  if (endDate) {
+    filters.push(` blog.date <= '${endDate}' `);
+  }
+
+  let filtersString = "";
+
+  filters.map((item, index) => {
+    filtersString += index > 0 ? ` AND ` : ` `;
+    filtersString += item;
+  });
+
+  if (filtersString) query += ` WHERE ${filtersString} `;
+
+  if (sortCol) {
+    query += ` ORDER BY ${sortCol} ${sortDir} `;
+  }
+
+  query += ` LIMIT ${row} OFFSET ${offSet} `;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+    return result.rows;
+  } catch (err) {
+    return false;
+  }
+};

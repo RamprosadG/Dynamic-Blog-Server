@@ -3,24 +3,29 @@ import React, { useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import "bootstrap";
 
 const Topic = () => {
-  const [inputValue, setInputValue] = useState("");
+  const [topicName, setTopicName] = useState("");
   const [navigate, setNavigate] = useState(false);
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+  const handleTopicName = (event) => {
+    setTopicName(event.target.value);
   };
 
-  const handleClearClick = () => {
-    setInputValue("");
+  const handleReset = () => {
+    setTopicName("");
+  };
+
+  const handleRedirectToAdminPage = () => {
+    setNavigate(true);
   };
 
   const handleAddTopic = async (e) => {
     e.preventDefault();
     try {
       const formData = {
-        name: inputValue,
+        name: topicName,
       };
       await axios
         .post("http://localhost:5000/admin/addTopic", formData)
@@ -40,34 +45,45 @@ const Topic = () => {
         {navigate && <Navigate to="/admin/home" />}
         <Card style={{ width: "50%" }}>
           <Card.Body>
-            <Card.Title className="text-center">Add a new topic</Card.Title>
+            <Card.Title className="text-center">Add a topic</Card.Title>
 
             <Form className="my-3">
               <Form.Group controlId="formInput">
-                <Form.Label>Name</Form.Label>
+                <Form.Label>Topic name</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter name"
+                  placeholder="Enter topic name"
                   required
-                  value={inputValue}
-                  onChange={handleInputChange}
+                  value={topicName}
+                  onChange={handleTopicName}
                 />
               </Form.Group>
             </Form>
-            <div className="d-flex justify-content-end">
+
+            <div className="d-flex justify-content-end mt-4">
               <Button
-                variant="secondary"
+                variant="outline-secondary"
                 className="mr-2"
-                onClick={handleClearClick}
+                onClick={handleReset}
               >
-                Clear
+                Reset
               </Button>
               <Button
-                variant="primary"
+                variant="outline-secondary"
                 className="ms-2"
                 onClick={handleAddTopic}
               >
-                Add
+                Add Topic
+              </Button>
+            </div>
+
+            <div className="col">
+              <Button
+                variant="link"
+                className="ms-2"
+                onClick={handleRedirectToAdminPage}
+              >
+                Go to admin page
               </Button>
             </div>
           </Card.Body>

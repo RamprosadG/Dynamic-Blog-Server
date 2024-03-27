@@ -1,5 +1,6 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 const Register = () => {
   const [userName, setUserName] = useState("");
@@ -7,7 +8,6 @@ const Register = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleUserNameChange = (e) => {
     setUserName(e.target.value);
@@ -29,13 +29,26 @@ const Register = () => {
     setPassword(e.target.value);
   };
 
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-  };
-
-  const handleRegister = () => {
-    // Handle register action
-    console.log("Register clicked");
+  const handleRegister = async (e) => {
+    //console.log("Register clicked");
+    e.preventDefault();
+    try {
+      const formData = {
+        userName: userName,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        password: password,
+      };
+      console.log(formData);
+      await axios
+        .post("http://localhost:5000/register", formData)
+        .then((response) => {
+          alert(response.data.message);
+        });
+    } catch (error) {
+      console.log("There is an error", error);
+    }
   };
 
   const handleReset = () => {
@@ -44,7 +57,6 @@ const Register = () => {
     setFirstName("");
     setLastName("");
     setPassword("");
-    setConfirmPassword("");
   };
 
   return (
@@ -56,18 +68,8 @@ const Register = () => {
               <h2>Register</h2>
             </div>
             <Form>
-              <Form.Group className="mb-5" controlId="formBasicUserName">
-                <Form.Label>User Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter user name"
-                  value={userName}
-                  onChange={handleUserNameChange}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-5" controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Email</Form.Label>
                 <Form.Control
                   type="email"
                   placeholder="Enter email"
@@ -76,55 +78,51 @@ const Register = () => {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-5" controlId="formBasicFirstName">
-                <Form.Label>First Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter first name"
-                  value={firstName}
-                  onChange={handleFirstNameChange}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-5" controlId="formBasicLastName">
-                <Form.Label>Last Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter last name"
-                  value={lastName}
-                  onChange={handleLastNameChange}
-                />
-              </Form.Group>
-
               <Form.Group className="mb-5" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
                 <Form.Control
                   type="password"
-                  placeholder="Password"
+                  placeholder="Enter password"
                   value={password}
                   onChange={handlePasswordChange}
                 />
               </Form.Group>
 
-              <Form.Group className="mb-5" controlId="formBasicConfirmPassword">
-                <Form.Label>Confirm password</Form.Label>
+              <Form.Group className="mb-3" controlId="formBasicUserName">
+                <Form.Label>User name</Form.Label>
                 <Form.Control
-                  type="password"
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
+                  type="text"
+                  value={userName}
+                  onChange={handleUserNameChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formBasicFirstName">
+                <Form.Label>First name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={firstName}
+                  onChange={handleFirstNameChange}
                 />
               </Form.Group>
 
-              <div className="d-flex justify-content-end">
+              <Form.Group className="mb-3" controlId="formBasicLastName">
+                <Form.Label>Last name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                />
+              </Form.Group>
+
+              <div className="d-flex justify-content-end mt-5">
                 <Button
-                  variant="secondary"
+                  variant="outline-secondary"
                   className="me-3"
                   onClick={handleReset}
                 >
                   Reset
                 </Button>
-                <Button variant="primary" onClick={handleRegister}>
+                <Button variant="outline-secondary" onClick={handleRegister}>
                   Register
                 </Button>
               </div>

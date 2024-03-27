@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import TopicDropdown from "../../components/Dropdown";
+import { Form } from "react-bootstrap";
+import "bootstrap";
+import { customStyles, columnsOfBlog } from "../../data/tableCustomStyles";
 
 const BlogTable = () => {
   const [data, setData] = useState([]);
@@ -10,12 +14,26 @@ const BlogTable = () => {
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [topic, setTopic] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, searchText]);
+  }, [
+    currentPage,
+    paginationTotalRows,
+    sortColumn,
+    sortDirection,
+    searchText,
+    topic,
+    startDate,
+    endDate,
+    status,
+  ]);
 
-  const fetchData = async () => {
+  const fetchData = () => {
     try {
       setLoading(true);
       const formData = {
@@ -24,9 +42,14 @@ const BlogTable = () => {
         sortCol: sortColumn,
         sortDir: sortDirection,
         search: searchText,
+        startDate: startDate,
+        endDate: endDate,
+        topic: topic,
+        status: status,
       };
-      await axios
-        .get("http://localhost:5000/user", {
+
+      axios
+        .get("http://localhost:5000/admin/getBlogsForTable", {
           params: formData,
         })
         .then((response) => {
@@ -38,6 +61,22 @@ const BlogTable = () => {
       setData([]);
       setLoading(false);
     }
+  };
+
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+  };
+
+  const handleTopicChange = (newTopic) => {
+    setTopic(newTopic);
+  };
+
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value);
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value);
   };
 
   const handlePageChange = async (page) => {
@@ -53,53 +92,75 @@ const BlogTable = () => {
     setSortDirection(direction);
   };
 
-  const handleSearch = (value) => {
-    setSearchText(value);
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
   };
-
-  const columns = [
-    {
-      name: "Id",
-      sortField: "id",
-      selector: (row) => row.id,
-      sortable: true,
-    },
-    {
-      name: "Name",
-      sortField: "name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Email",
-      sortField: "email",
-      selector: (row) => row.email,
-      sortable: true,
-    },
-    // Add more columns as needed
-  ];
 
   return (
     <>
-      <div>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchText}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
+      <div className="row">
+        <div className="col-3">
+          <Form.Label>Topic</Form.Label>
+          <TopicDropdown udpateTopic={handleTopicChange} />
+        </div>
+        <div className="col-3">
+          <Form.Label>Status</Form.Label>
+          <select
+            className="form-select"
+            onChange={handleStatusChange}
+            value={status}
+          >
+            <option value="">Select status</option>
+            <option value="true">Published</option>
+            <option value="false">Unpublished</option>
+          </select>
+        </div>
+        <div className="col-3">
+          <Form>
+            <Form.Label>Start date</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={startDate}
+              onChange={handleStartDateChange}
+            />
+          </Form>
+        </div>
+        <div className="col-3">
+          <Form>
+            <Form.Label>End date</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={endDate}
+              onChange={handleEndDateChange}
+            />
+          </Form>
+        </div>
+      </div>
+      <div className="row mt-5 mb-2">
+        <div className="col-3">
+          <Form.Control
+            type="search"
+            placeholder="Search"
+            value={searchText}
+            onChange={handleSearchChange}
+            className="me-2"
+            aria-label="Search"
+          />
+        </div>
       </div>
       <DataTable
-        columns={columns}
+        striped={true}
+        highlightOnHover={true}
+        columns={columnsOfBlog}
         data={data}
+        customStyles={customStyles}
         progressPending={loading}
         pagination
         paginationServer
-        paginationTotalRows={100}
         onChangePage={handlePageChange}
         onChangeRowsPerPage={handleRowsPerPageChange}
         paginationRowsPerPageOptions={[10, 25, 50, 100]}
-        sortSever
+        sortServer
         onSort={handleSort}
       />
     </>

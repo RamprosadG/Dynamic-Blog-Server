@@ -5,6 +5,7 @@ const {
   addNewBlog,
   updateExistingBlog,
   deleteExistingBlog,
+  getBlogInfoForTable,
 } = require("../models/blogModel");
 const {
   getTopicById,
@@ -260,4 +261,9 @@ exports.getAllBlog = async (req, res) => {
   }
 
   res.json({ message: "All blogs are fetched successfully.", data: result });
+};
+
+exports.getBlogsForTable = async (req, res) => {
+  const data = await getBlogInfoForTable(req.query);
+  res.json(data);
 };

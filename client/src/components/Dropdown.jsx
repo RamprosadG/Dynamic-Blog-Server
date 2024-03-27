@@ -26,7 +26,7 @@ const TopicDropdown = ({ udpateTopic }) => {
   return (
     <Form.Select onChange={handleTopicChange} value={selectedTopic}>
       <option key={"option"} value={""}>
-        Select a Topic
+        Select topic
       </option>
       {options.map((option, index) => (
         <option key={option.id} value={option.id}>

@@ -6,6 +6,7 @@ import { Navigate } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
 import TextEditor from "../../components/TextEditor";
 import TopicDropdown from "../../components/Dropdown";
+import "../../styles/quill.css";
 
 const Blog = () => {
   const [topic, setTopic] = useState("");
@@ -23,6 +24,10 @@ const Blog = () => {
 
   const handleDescriptionChange = (newDescription) => {
     setDescription(newDescription);
+  };
+
+  const handleRedirectToAdminPage = () => {
+    setNavigate(true);
   };
 
   const handleAddBlog = async (e) => {
@@ -57,12 +62,14 @@ const Blog = () => {
         {navigate && <Navigate to="/admin/home" />}
         <Card>
           <Card.Body>
-            <Card.Title className="text-center mb-4">Add a new blog</Card.Title>
+            <Card.Title className="text-center mb-4">Add a blog</Card.Title>
             <Row className="mb-3">
               <Col md={6}>
+                <Form.Label>Select topic</Form.Label>
                 <TopicDropdown udpateTopic={handleTopicChange} />
               </Col>
               <Col md={6}>
+                <Form.Label>Blog title</Form.Label>
                 <Form.Control
                   type="text"
                   value={title}
@@ -75,13 +82,24 @@ const Blog = () => {
               <TextEditor udpateDescription={handleDescriptionChange} />
             </Row>
             <Row>
-              <Col className="d-flex justify-content-end">
+              <Col className="d-flex justify-content-end mt-4">
                 <Button
-                  variant="primary"
+                  variant="outline-secondary"
                   className="ms-2"
                   onClick={handleAddBlog}
                 >
-                  Add
+                  Add blog
+                </Button>
+              </Col>
+            </Row>
+            <Row>
+              <Col className="d-flex justify-content-start">
+                <Button
+                  variant="link"
+                  className="ms-2"
+                  onClick={handleRedirectToAdminPage}
+                >
+                  Go to admin page
                 </Button>
               </Col>
             </Row>
