@@ -3,7 +3,10 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Form } from "react-bootstrap";
 import "bootstrap";
-import { customStyles, columnsOfTopic } from "../../data/tableCustomStyles";
+import { customStyles } from "../../data/tableCustomStyles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import ThreeDotMenu from "../../components/ThreeDotMenu";
 
 const TopicTable = () => {
   const [data, setData] = useState([]);
@@ -59,6 +62,26 @@ const TopicTable = () => {
   const handleSearchChanges = (e) => {
     setSearchText(e.target.value);
   };
+
+  const columnsOfTopic = [
+    {
+      name: "Topic",
+      sortField: "name",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: "Number of Blog",
+      sortField: "numberOfBlog",
+      selector: (row) => row.numberofblog,
+      sortable: true,
+    },
+    {
+      sortable: false,
+      width: "55px",
+      cell: (row) => <ThreeDotMenu data={{ table: "topic", id: row.topic }} />,
+    },
+  ];
 
   return (
     <>

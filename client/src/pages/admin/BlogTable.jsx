@@ -4,7 +4,15 @@ import DataTable from "react-data-table-component";
 import TopicDropdown from "../../components/Dropdown";
 import { Form } from "react-bootstrap";
 import "bootstrap";
-import { customStyles, columnsOfBlog } from "../../data/tableCustomStyles";
+import { customStyles } from "../../data/tableCustomStyles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faEllipsisVertical,
+  faPenToSquare,
+  faTrash,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
+import ThreeDotMenu from "../../components/ThreeDotMenu";
 
 const BlogTable = () => {
   const [data, setData] = useState([]);
@@ -95,6 +103,50 @@ const BlogTable = () => {
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
+
+  const columnsOfBlog = [
+    {
+      name: "Title",
+      sortField: "title",
+      selector: (row) => row.title,
+      sortable: true,
+    },
+    {
+      name: "Topic",
+      sortField: "topic",
+      selector: (row) => row.topic,
+      sortable: true,
+    },
+    {
+      name: "Author",
+      sortField: "author",
+      selector: (row) => row.author,
+      sortable: true,
+    },
+    {
+      name: "Date",
+      sortField: "date",
+      selector: (row) => row.date,
+      sortable: true,
+    },
+    {
+      name: "status",
+      sortField: "status",
+      selector: (row) => row.status,
+      sortable: true,
+    },
+    {
+      name: "Publish date",
+      sortField: "publish_date",
+      selector: (row) => row.publish_date,
+      sortable: true,
+    },
+    {
+      sortable: false,
+      width: "55px",
+      cell: (row) => <ThreeDotMenu data={{ table: "blog", id: row.topic }} />,
+    },
+  ];
 
   return (
     <>
