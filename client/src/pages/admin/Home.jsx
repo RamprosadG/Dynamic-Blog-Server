@@ -2,7 +2,7 @@ import React from "react";
 import BlogTable from "./BlogTable";
 import { Form, Link } from "react-router-dom";
 import "../../styles/admin.css";
-import TitleTable from "./TitleTable";
+import TopicTable from "./TopicTable";
 
 const Home = () => {
   return (
@@ -26,7 +26,7 @@ const Home = () => {
         </div>
         <div className="row justify-content-between mt-5">
           <div className="col">
-            <h1>List of Title</h1>
+            <h1>List of topic</h1>
           </div>
           <div className="col d-flex justify-content-end">
             <Link to="/admin/topic">
@@ -37,7 +37,7 @@ const Home = () => {
           </div>
         </div>
         <div>
-          <TitleTable />
+          <TopicTable />
         </div>
       </div>
     </>

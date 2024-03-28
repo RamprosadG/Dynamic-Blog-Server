@@ -112,7 +112,7 @@ const BlogTable = () => {
           >
             <option value="">Select status</option>
             <option value="true">Published</option>
-            <option value="false">Unpublished</option>
+            <option value="false">Not published</option>
           </select>
         </div>
         <div className="col-3">

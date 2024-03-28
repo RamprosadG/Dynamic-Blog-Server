@@ -1,11 +1,11 @@
-const allowedOrigins = ["http://localhost:5173"];
+const { allowedOrigins } = require("../config/authKey");
 
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed"));
+      callback(new Error("Unauthorized."));
     }
   },
 };

@@ -9,6 +9,7 @@ const {
   updateBlog,
   deleteBlog,
   getBlogsForTable,
+  getTopicForTable,
 } = require("../controllers/adminController");
 
 const adminRouter = require("express").Router();
@@ -25,5 +26,6 @@ adminRouter.put("/updateBlog", updateBlog);
 adminRouter.delete("/deleteBlog", deleteBlog);
 
 adminRouter.get("/getBlogsForTable", getBlogsForTable);
+adminRouter.get("/getTopicForTable", getTopicForTable);
 
 module.exports = adminRouter;

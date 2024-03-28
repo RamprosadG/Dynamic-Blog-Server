@@ -14,6 +14,7 @@ const {
   addNewTopic,
   updateExistingTopic,
   deleteExistingTopic,
+  getTopicInfoForTable,
 } = require("../models/topicModel");
 
 exports.getTopic = async (req, res) => {
@@ -265,5 +266,10 @@ exports.getAllBlog = async (req, res) => {
 
 exports.getBlogsForTable = async (req, res) => {
   const data = await getBlogInfoForTable(req.query);
+  res.json(data);
+};
+
+exports.getTopicForTable = async (req, res) => {
+  const data = await getTopicInfoForTable(req.query);
   res.json(data);
 };

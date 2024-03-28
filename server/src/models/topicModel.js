@@ -92,3 +92,40 @@ exports.deleteExistingTopic = async (data) => {
     return false;
   }
 };
+
+exports.getTopicInfoForTable = async (data) => {
+  const sql = new Client(postgresql);
+  const search = data.search.toLowerCase();
+  const sortCol = data.sortCol;
+  const sortDir = data.sortDir;
+  const row = data.row;
+  const offSet = row * (data.page - 1);
+
+  let query = ` SELECT
+                topic.name AS name,
+                COUNT(blog.id) AS numberOfBlog
+                FROM public.topic
+                LEFT JOIN public.blog ON blog.topic_id = topic.id
+                GROUP BY topic.name `;
+
+  if (search) {
+    query += ` WHERE LOWER(topic.name) LIKE '%${search}%' `;
+  }
+
+  if (sortCol && sortCol === "name") {
+    query += ` ORDER BY ${sortCol} ${sortDir} `;
+  } else if (sortCol && sortCol === "numberOfBlog") {
+    query += ` ORDER BY COUNT(blog.id) ${sortDir} `;
+  }
+
+  query += ` LIMIT ${row} OFFSET ${offSet} `;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+    return result.rows;
+  } catch (err) {
+    return false;
+  }
+};

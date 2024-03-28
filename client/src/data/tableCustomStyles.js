@@ -74,23 +74,16 @@ const columnsOfBlog = [
 const columnsOfTopic = [
   {
     name: "Topic",
-    sortField: "topic",
-    selector: (row) => row.topic,
+    sortField: "name",
+    selector: (row) => row.name,
     sortable: true,
   },
   {
-    name: "Author",
-    sortField: "author",
-    selector: (row) => row.author,
+    name: "Number of Blog",
+    sortField: "numberOfBlog",
+    selector: (row) => row.numberofblog,
     sortable: true,
   },
-  {
-    name: "Date",
-    sortField: "date",
-    selector: (row) => row.date,
-    sortable: true,
-  },
-  // Add more columns as needed
 ];
 
 export { customStyles, columnsOfBlog, columnsOfTopic };
