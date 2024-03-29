@@ -49,7 +49,7 @@ const LoginPage = () => {
     <>
       <div className="d-flex justify-content-center">
         {navigate && <Navigate to="/admin/home" />}
-        <div className="card mt-3" style={{ width: "50%" }}>
+        <div className="card card-width mt-3">
           <div className="card-body">
             <div className="card-title text-center">
               <h2>Login</h2>

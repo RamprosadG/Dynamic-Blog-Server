@@ -1,33 +1,34 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AdminHome from "./pages/admin/Home";
-import AdminBlog from "./pages/admin/Blog";
-import UserHome from "./pages/user/Home";
-import UserBlog from "./pages/user/Blog";
-import AdminTopic from "./pages/admin/Topic";
-import Error from "./pages/user/Error";
-import LoginPage from "./pages/user/Login";
-import RegisterPage from "./pages/user/Register";
-import Layout from "./components/Layout";
+import Header from "./components/Layout/Header";
+import HomePage from "./pages/common/HomePage";
+import LoginPage from "./pages/common/LoginPage";
+import RegisterPage from "./pages/common/RegisterPage";
+import AdminPage from "./pages/admin/AdminPage";
+import BlogPage from "./pages/protected/BlogPage";
+import TopicPage from "./pages/protected/TopicPage";
+import ErrorPage from "./pages/common/ErrorPage";
+import "./styles/styles.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "styled-components";
+import "react-quill/dist/quill.snow.css";
 
 const App = () => {
   return (
-    <>
+    <div className="container">
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" Component={UserHome} />
-            <Route path="/user/blog" Component={UserBlog} />
-            <Route path="/user/login" Component={LoginPage} />
-            <Route path="/user/register" Component={RegisterPage} />
-            <Route path="/admin/home" Component={AdminHome} />
-            <Route path="/admin/blog" Component={AdminBlog} />
-            <Route path="/admin/topic" Component={AdminTopic} />
-            <Route path="*" Component={Error} />
-          </Routes>
-        </Layout>
+        <Header />
+        <Routes>
+          <Route path="/" Component={HomePage} />
+          <Route path="/login" Component={LoginPage} />
+          <Route path="/register" Component={RegisterPage} />
+          <Route path="/admin" Component={AdminPage} />
+          <Route path="/blog/:option" Component={BlogPage} />
+          <Route path="/topic/:option" Component={TopicPage} />
+          <Route path="*" Component={ErrorPage} />
+        </Routes>
       </BrowserRouter>
-    </>
+    </div>
   );
 };
 

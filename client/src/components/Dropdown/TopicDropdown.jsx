@@ -24,12 +24,16 @@ const TopicDropdown = ({ udpateTopic }) => {
   };
 
   return (
-    <Form.Select onChange={handleTopicChange} value={selectedTopic}>
-      <option key={"option"} value={""}>
+    <Form.Select
+      id="topic-select"
+      onChange={handleTopicChange}
+      value={selectedTopic}
+    >
+      <option id="option" key={"option"} value={""}>
         Select topic
       </option>
       {options.map((option, index) => (
-        <option key={option.id} value={option.id}>
+        <option id={option.id} key={option.id} value={option.id}>
           {option.name}
         </option>
       ))}

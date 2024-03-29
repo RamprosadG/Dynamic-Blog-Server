@@ -72,36 +72,32 @@ exports.addTopic = async (req, res) => {
 };
 
 exports.updateTopic = async (req, res) => {
-  const id = req.body["id"];
-  const name = req.body["name"];
+  const id = req.body.id;
+  const name = req.body.name;
 
   if (!name) {
-    res.json({ message: "Name is required." });
-    return;
+    return res.json({ message: "Name is required." });
   }
 
   const existingName = await getTopicName(name);
 
   if (existingName === name) {
-    res.json({ message: "The topic already exists." });
-    return;
+    return res.json({ message: "The topic already exists." });
   }
+
   const topic = getTopicById(id);
 
   if (!topic) {
-    res.json({ message: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error" });
   }
 
   if (!topic.length) {
-    res.json({ message: "The topic is not found." });
-    return;
+    return res.json({ message: "The topic is not found." });
   }
   const result = updateExistingTopic(req.body);
 
   if (!result) {
-    res.json({ message: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error" });
   }
   res.json({ message: "Topic is updated successfully" });
 };

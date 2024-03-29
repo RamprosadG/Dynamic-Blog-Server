@@ -102,11 +102,12 @@ exports.getTopicInfoForTable = async (data) => {
   const offSet = row * (data.page - 1);
 
   let query = ` SELECT
+                topic.id AS id,
                 topic.name AS name,
                 COUNT(blog.id) AS numberOfBlog
                 FROM public.topic
                 LEFT JOIN public.blog ON blog.topic_id = topic.id
-                GROUP BY topic.name `;
+                GROUP BY topic.name, topic.id `;
 
   if (search) {
     query += ` WHERE LOWER(topic.name) LIKE '%${search}%' `;

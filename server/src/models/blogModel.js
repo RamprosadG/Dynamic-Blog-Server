@@ -137,6 +137,7 @@ exports.getBlogInfoForTable = async (data) => {
   const offSet = row * (data.page - 1);
 
   let query = ` SELECT
+                blog.id AS id,
                 blog.title AS title,
                 blog.date AS date,
                 blog.publish_date AS publish_date,

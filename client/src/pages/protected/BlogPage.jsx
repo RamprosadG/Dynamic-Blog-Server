@@ -2,17 +2,19 @@ import { Button, Col, Row } from "react-bootstrap";
 import React, { useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
-import "react-quill/dist/quill.snow.css";
-import TextEditor from "../../components/TextEditor";
-import TopicDropdown from "../../components/Dropdown";
-import "../../styles/quill.css";
+import TextEditor from "../../components/TextEditor/TextEditor";
+import TopicDropdown from "../../components/Dropdown/TopicDropdown";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
-const Blog = () => {
+const BlogPage = () => {
   const [topic, setTopic] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [navigate, setNavigate] = useState(false);
+  const navigate = useNavigate();
+  const { option } = useParams();
+  const location = useLocation();
+  console.log(location.state.id);
+  //console.log(location);
 
   const handleTopicChange = (newTopic) => {
     setTopic(newTopic);
@@ -27,7 +29,7 @@ const Blog = () => {
   };
 
   const handleRedirectToAdminPage = () => {
-    setNavigate(true);
+    navigate("/admin");
   };
 
   const handleAddBlog = async (e) => {
@@ -48,8 +50,8 @@ const Blog = () => {
         .post("http://localhost:5000/admin/addBlog", formData)
         .then((response) => {
           const successfulResponse = "The blog is added successfully.";
-          response.data.message === successfulResponse && setNavigate(true);
           alert(response.data.message);
+          response.data.message === successfulResponse && navigate("/admin");
         });
     } catch (error) {
       console.log("There is an error");
@@ -59,7 +61,6 @@ const Blog = () => {
   return (
     <>
       <div className="my-3">
-        {navigate && <Navigate to="/admin/home" />}
         <Card>
           <Card.Body>
             <Card.Title className="text-center mb-4">Add a blog</Card.Title>
@@ -72,6 +73,7 @@ const Blog = () => {
                 <Form.Label>Blog title</Form.Label>
                 <Form.Control
                   type="text"
+                  id="blog-title"
                   value={title}
                   onChange={handleTitleChange}
                   placeholder="Enter a title"
@@ -99,7 +101,7 @@ const Blog = () => {
                   className="ms-2"
                   onClick={handleRedirectToAdminPage}
                 >
-                  Go to admin page
+                  Back to admin page
                 </Button>
               </Col>
             </Row>
@@ -110,4 +112,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default BlogPage;

@@ -1,19 +1,19 @@
 import React from "react";
-import BlogTable from "./BlogTable";
-import { Form, Link } from "react-router-dom";
-import "../../styles/admin.css";
-import TopicTable from "./TopicTable";
+import BlogTable from "../../components/Tables/BlogTable";
+import { Link } from "react-router-dom";
+import TopicTable from "../../components/Tables/TopicTable";
 
-const Home = () => {
+const AdminPage = () => {
+  const id = 1;
   return (
     <>
-      <div className="admin-body my-3 p-3">
+      <div className="admin-page-style my-3 p-3">
         <div className="row justify-content-between mb-5">
           <div className="col">
             <h1>List of blog</h1>
           </div>
           <div className="col d-flex justify-content-end">
-            <Link to="/admin/blog">
+            <Link to="/blog/add" state={{ id }}>
               <button type="button" className="btn btn-outline-secondary">
                 Add a blog
               </button>
@@ -29,7 +29,7 @@ const Home = () => {
             <h1>List of topic</h1>
           </div>
           <div className="col d-flex justify-content-end">
-            <Link to="/admin/topic">
+            <Link to="/topic/add">
               <button type="button" className="btn btn-outline-secondary">
                 Add a topic
               </button>
@@ -44,4 +44,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default AdminPage;

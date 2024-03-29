@@ -2,12 +2,14 @@ import { Button } from "react-bootstrap";
 import React, { useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
-import "bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const Topic = () => {
+const TopicPage = (props) => {
   const [topicName, setTopicName] = useState("");
-  const [navigate, setNavigate] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  //console.log(location.state.id);
+  console.log(location);
 
   const handleTopicName = (event) => {
     setTopicName(event.target.value);
@@ -18,7 +20,7 @@ const Topic = () => {
   };
 
   const handleRedirectToAdminPage = () => {
-    setNavigate(true);
+    navigate("/admin");
   };
 
   const handleAddTopic = async (e) => {
@@ -31,19 +33,37 @@ const Topic = () => {
         .post("http://localhost:5000/admin/addTopic", formData)
         .then((response) => {
           const successfulResponse = "The topic is added successfully.";
-          response.data.message === successfulResponse && setNavigate(true);
           alert(response.data.message);
+          response.data.message == successfulResponse && navigate("/admin");
         });
     } catch (error) {
       console.log("There is an error");
     }
   };
 
+  // const handleUpdateTopic = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const formData = {
+  //       id: data.id,
+  //       name: topicName,
+  //     };
+  //     await axios
+  //       .put("http://localhost:5000/admin/updateTopic", formData)
+  //       .then((response) => {
+  //         const successfulResponse = "The topic is updated successfully.";
+  //         response.data.message === successfulResponse && setNavigate(true);
+  //         alert(response.data.message);
+  //       });
+  //   } catch (error) {
+  //     console.log("There is an error");
+  //   }
+  // };
+
   return (
     <>
       <div className="d-flex justify-content-center my-5">
-        {navigate && <Navigate to="/admin/home" />}
-        <Card style={{ width: "50%" }}>
+        <Card className="card-width">
           <Card.Body>
             <Card.Title className="text-center">Add a topic</Card.Title>
 
@@ -73,7 +93,7 @@ const Topic = () => {
                 className="ms-2"
                 onClick={handleAddTopic}
               >
-                Add Topic
+                Add topic
               </Button>
             </div>
 
@@ -83,7 +103,7 @@ const Topic = () => {
                 className="ms-2"
                 onClick={handleRedirectToAdminPage}
               >
-                Go to admin page
+                Back to admin page
               </Button>
             </div>
           </Card.Body>
@@ -93,4 +113,4 @@ const Topic = () => {
   );
 };
 
-export default Topic;
+export default TopicPage;

@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Form } from "react-bootstrap";
-import "bootstrap";
-import { customStyles } from "../../data/tableCustomStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import ThreeDotMenu from "../../components/ThreeDotMenu";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
+import TableCustomStyles from "./TableCustomStyles";
 
 const TopicTable = () => {
   const [data, setData] = useState([]);
@@ -16,6 +15,7 @@ const TopicTable = () => {
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -63,6 +63,8 @@ const TopicTable = () => {
     setSearchText(e.target.value);
   };
 
+  const handleUpdateBlog = () => {};
+
   const columnsOfTopic = [
     {
       name: "Topic",
@@ -78,8 +80,27 @@ const TopicTable = () => {
     },
     {
       sortable: false,
-      width: "55px",
-      cell: (row) => <ThreeDotMenu data={{ table: "topic", id: row.topic }} />,
+      width: "100px",
+      cell: (row) => {
+        return (
+          <div className="container ms-2">
+            <div className="d-flex justify-content-start">
+              <Link to="/topic/update" state={{ id: row.id }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary, btn-sm"
+                  onClick={handleUpdateBlog}
+                >
+                  <FontAwesomeIcon icon={faPenToSquare} />
+                </button>
+              </Link>
+              <button type="button" className="btn btn-secondary, btn-sm">
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            </div>
+          </div>
+        );
+      },
     },
   ];
 
@@ -98,11 +119,12 @@ const TopicTable = () => {
         </div>
       </div>
       <DataTable
+        id="topic-table"
         striped={true}
         highlightOnHover={true}
         columns={columnsOfTopic}
         data={data}
-        customStyles={customStyles}
+        customStyles={TableCustomStyles}
         progressPending={loading}
         pagination
         paginationServer

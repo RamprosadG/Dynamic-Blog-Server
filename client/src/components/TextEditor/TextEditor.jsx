@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 
 const TextEditor = ({ udpateDescription }) => {
   const [content, setContent] = useState("");
@@ -47,6 +46,7 @@ const TextEditor = ({ udpateDescription }) => {
   return (
     <div>
       <ReactQuill
+        id="react-quill"
         theme="snow"
         value={content}
         onChange={setContent}

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Error = () => {
+const ErrorPage = () => {
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>404 Page not found</h1>
@@ -8,4 +8,4 @@ const Error = () => {
   );
 };
 
-export default Error;
+export default ErrorPage;

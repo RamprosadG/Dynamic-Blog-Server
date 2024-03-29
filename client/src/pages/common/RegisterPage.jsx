@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 
-const Register = () => {
+const RegisterPage = () => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -62,7 +62,7 @@ const Register = () => {
   return (
     <>
       <div className="d-flex justify-content-center">
-        <div className="card my-3" style={{ width: "50%" }}>
+        <div className="card card-width my-3">
           <div className="card-body">
             <div className="card-title text-center">
               <h2>Register</h2>
@@ -134,4 +134,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterPage;

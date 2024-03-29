@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-import TopicDropdown from "../../components/Dropdown";
+import TopicDropdown from "../Dropdown/TopicDropdown";
 import { Form } from "react-bootstrap";
-import "bootstrap";
-import { customStyles } from "../../data/tableCustomStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEllipsisVertical,
-  faPenToSquare,
-  faTrash,
-  faTrashCan,
-} from "@fortawesome/free-solid-svg-icons";
-import ThreeDotMenu from "../../components/ThreeDotMenu";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import TableCustomStyles from "./TableCustomStyles";
+import { Link } from "react-router-dom";
 
 const BlogTable = () => {
   const [data, setData] = useState([]);
@@ -143,8 +137,23 @@ const BlogTable = () => {
     },
     {
       sortable: false,
-      width: "55px",
-      cell: (row) => <ThreeDotMenu data={{ table: "blog", id: row.topic }} />,
+      width: "100px",
+      cell: (row) => {
+        return (
+          <div className="container ms-2">
+            <div className="d-flex justify-content-start">
+              <Link to="/blog/update" state={{ id: row.id }}>
+                <button type="button" className="btn btn-secondary, btn-sm">
+                  <FontAwesomeIcon icon={faPenToSquare} />
+                </button>
+              </Link>
+              <button type="button" className="btn btn-secondary, btn-sm">
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
+            </div>
+          </div>
+        );
+      },
     },
   ];
 
@@ -159,12 +168,19 @@ const BlogTable = () => {
           <Form.Label>Status</Form.Label>
           <select
             className="form-select"
+            id="blog-table-status"
             onChange={handleStatusChange}
             value={status}
           >
-            <option value="">Select status</option>
-            <option value="true">Published</option>
-            <option value="false">Not published</option>
+            <option id="status" value="">
+              Select status
+            </option>
+            <option id="published" value="true">
+              Published
+            </option>
+            <option id="not-published" value="false">
+              Not published
+            </option>
           </select>
         </div>
         <div className="col-3">
@@ -172,6 +188,7 @@ const BlogTable = () => {
             <Form.Label>Start date</Form.Label>
             <Form.Control
               type="datetime-local"
+              id="blog-table-start-date"
               value={startDate}
               onChange={handleStartDateChange}
             />
@@ -182,6 +199,7 @@ const BlogTable = () => {
             <Form.Label>End date</Form.Label>
             <Form.Control
               type="datetime-local"
+              id="blog-table-end-date"
               value={endDate}
               onChange={handleEndDateChange}
             />
@@ -192,6 +210,7 @@ const BlogTable = () => {
         <div className="col-3">
           <Form.Control
             type="search"
+            id="blog-table-search"
             placeholder="Search"
             value={searchText}
             onChange={handleSearchChange}
@@ -201,11 +220,12 @@ const BlogTable = () => {
         </div>
       </div>
       <DataTable
+        id="blog-table"
         striped={true}
         highlightOnHover={true}
         columns={columnsOfBlog}
         data={data}
-        customStyles={customStyles}
+        customStyles={TableCustomStyles}
         progressPending={loading}
         pagination
         paginationServer
