@@ -1,5 +1,5 @@
 import { Button, Col, Row } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Form } from "react-bootstrap";
 import axios from "axios";
 import TextEditor from "../../components/TextEditor/TextEditor";
@@ -13,8 +13,31 @@ const BlogPage = () => {
   const navigate = useNavigate();
   const { option } = useParams();
   const location = useLocation();
-  console.log(location.state.id);
-  //console.log(location);
+  const id = location.state.id;
+
+  useEffect(() => {
+    if (option == "Update") {
+      setBlogValue();
+    }
+  }, []);
+
+  const setBlogValue = () => {
+    const formData = {
+      id: id,
+    };
+    axios
+      .get("http://localhost:5000/admin/getBlog", {
+        params: formData,
+      })
+      .then((response) => {
+        setTitle(response.data.data.title);
+        setTopic(response.data.data.topic_id);
+        setDescription(response.data.data.description);
+      })
+      .catch(() => {
+        console.log("server error");
+      });
+  };
 
   const handleTopicChange = (newTopic) => {
     setTopic(newTopic);
@@ -33,7 +56,6 @@ const BlogPage = () => {
   };
 
   const handleAddBlog = async (e) => {
-    console.log(topic, title, description);
     e.preventDefault();
     const date = new Date();
     try {
@@ -41,7 +63,7 @@ const BlogPage = () => {
         topicId: topic,
         title: title,
         description: description,
-        userId: 1,
+        userId: 1, //need to update later
         date: date,
         status: false,
         publishDate: date,
@@ -49,12 +71,31 @@ const BlogPage = () => {
       await axios
         .post("http://localhost:5000/admin/addBlog", formData)
         .then((response) => {
-          const successfulResponse = "The blog is added successfully.";
           alert(response.data.message);
-          response.data.message === successfulResponse && navigate("/admin");
+          response.data.success && navigate("/admin");
         });
     } catch (error) {
-      console.log("There is an error");
+      console.log("Error in add blog.");
+    }
+  };
+
+  const handleUpdateBlog = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = {
+        id: location.state.id,
+        topicId: topic,
+        title: title,
+        description: description,
+      };
+      await axios
+        .put("http://localhost:5000/admin/updateBlog", formData)
+        .then((response) => {
+          alert(response.data.message);
+          response.data.success && navigate("/admin");
+        });
+    } catch (error) {
+      console.log("Error in update blog.");
     }
   };
 
@@ -67,13 +108,12 @@ const BlogPage = () => {
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Label>Select topic</Form.Label>
-                <TopicDropdown udpateTopic={handleTopicChange} />
+                <TopicDropdown value={topic} updateTopic={handleTopicChange} />
               </Col>
               <Col md={6}>
                 <Form.Label>Blog title</Form.Label>
                 <Form.Control
                   type="text"
-                  id="blog-title"
                   value={title}
                   onChange={handleTitleChange}
                   placeholder="Enter a title"
@@ -81,16 +121,19 @@ const BlogPage = () => {
               </Col>
             </Row>
             <Row className="my-3">
-              <TextEditor udpateDescription={handleDescriptionChange} />
+              <TextEditor
+                updateDescription={handleDescriptionChange}
+                value={description}
+              />
             </Row>
             <Row>
               <Col className="d-flex justify-content-end mt-4">
                 <Button
                   variant="outline-secondary"
                   className="ms-2"
-                  onClick={handleAddBlog}
+                  onClick={option === "Add" ? handleAddBlog : handleUpdateBlog}
                 >
-                  Add blog
+                  {option} blog
                 </Button>
               </Col>
             </Row>

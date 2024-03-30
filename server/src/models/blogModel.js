@@ -11,7 +11,7 @@ exports.getBlogById = async (id) => {
     await sql.end();
     return result.rows;
   } catch (err) {
-    return null;
+    return false;
   }
 };
 
@@ -24,12 +24,12 @@ exports.getBlogTitle = async (title) => {
     const result = await sql.query(query);
     await sql.end();
     if (!result.rows.length) {
-      return null;
+      return false;
     }
     const blogTitle = result.rows[0].title;
     return blogTitle;
   } catch (err) {
-    return null;
+    return false;
   }
 };
 
@@ -42,12 +42,12 @@ exports.getBlogDescription = async (description) => {
     const result = await sql.query(query);
     await sql.end();
     if (!result.rows.length) {
-      return null;
+      return false;
     }
     const blogDescription = result.rows[0].description;
     return blogDescription;
   } catch (err) {
-    return null;
+    return false;
   }
 };
 

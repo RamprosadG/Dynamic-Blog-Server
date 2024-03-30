@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import TopicTable from "../../components/Tables/TopicTable";
 
 const AdminPage = () => {
-  const id = 1;
   return (
     <>
       <div className="admin-page-style my-3 p-3">
@@ -13,7 +12,7 @@ const AdminPage = () => {
             <h1>List of blog</h1>
           </div>
           <div className="col d-flex justify-content-end">
-            <Link to="/blog/add" state={{ id }}>
+            <Link to="/blog/Add" state={{ id: 0 }}>
               <button type="button" className="btn btn-outline-secondary">
                 Add a blog
               </button>

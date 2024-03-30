@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 
-const TextEditor = ({ udpateDescription }) => {
+const TextEditor = ({ updateDescription, value }) => {
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    udpateDescription(content);
+    setContent(value);
+  }, [value]);
+
+  useEffect(() => {
+    updateDescription(content);
   }, [content]);
 
   const modules = {

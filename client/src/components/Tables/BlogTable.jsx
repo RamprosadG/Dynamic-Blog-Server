@@ -60,7 +60,6 @@ const BlogTable = () => {
         });
     } catch (error) {
       console.log("There is an error to fetch blogs");
-      setData([]);
       setLoading(false);
     }
   };
@@ -96,6 +95,24 @@ const BlogTable = () => {
 
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
+  };
+
+  const handleDeleteBlog = async (id) => {
+    const formData = {
+      id: id,
+    };
+    console.log(formData);
+    await axios
+      .delete("http://localhost:5000/admin/deleteBlog", {
+        data: formData,
+      })
+      .then((response) => {
+        alert(response.data.message);
+        response.data.success && fetchData();
+      })
+      .catch(() => {
+        console.log("server error");
+      });
   };
 
   const columnsOfBlog = [
@@ -142,12 +159,18 @@ const BlogTable = () => {
         return (
           <div className="container ms-2">
             <div className="d-flex justify-content-start">
-              <Link to="/blog/update" state={{ id: row.id }}>
+              <Link to="/blog/Update" state={{ id: row.id }}>
                 <button type="button" className="btn btn-secondary, btn-sm">
                   <FontAwesomeIcon icon={faPenToSquare} />
                 </button>
               </Link>
-              <button type="button" className="btn btn-secondary, btn-sm">
+              <button
+                type="button"
+                className="btn btn-secondary, btn-sm"
+                onClick={() => {
+                  handleDeleteBlog(row.id);
+                }}
+              >
                 <FontAwesomeIcon icon={faTrash} />
               </button>
             </div>
@@ -162,7 +185,7 @@ const BlogTable = () => {
       <div className="row">
         <div className="col-3">
           <Form.Label>Topic</Form.Label>
-          <TopicDropdown udpateTopic={handleTopicChange} />
+          <TopicDropdown updateTopic={handleTopicChange} value={topic} />
         </div>
         <div className="col-3">
           <Form.Label>Status</Form.Label>
