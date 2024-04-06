@@ -63,7 +63,22 @@ const TopicTable = () => {
     setSearchText(e.target.value);
   };
 
-  const handleUpdateBlog = () => {};
+  const handleDeleteTopic = async (id) => {
+    const formData = {
+      id: id,
+    };
+    await axios
+      .delete("http://localhost:5000/admin/deleteTopic", {
+        data: formData,
+      })
+      .then((response) => {
+        alert(response.data.message);
+        response.data.success && fetchData();
+      })
+      .catch(() => {
+        console.log("server error");
+      });
+  };
 
   const columnsOfTopic = [
     {
@@ -85,16 +100,18 @@ const TopicTable = () => {
         return (
           <div className="container ms-2">
             <div className="d-flex justify-content-start">
-              <Link to="/topic/update" state={{ id: row.id }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary, btn-sm"
-                  onClick={handleUpdateBlog}
-                >
+              <Link to="/topic/Update" state={{ id: row.id }}>
+                <button type="button" className="btn btn-secondary, btn-sm">
                   <FontAwesomeIcon icon={faPenToSquare} />
                 </button>
               </Link>
-              <button type="button" className="btn btn-secondary, btn-sm">
+              <button
+                type="button"
+                className="btn btn-secondary, btn-sm"
+                onClick={() => {
+                  handleDeleteTopic(row.id);
+                }}
+              >
                 <FontAwesomeIcon icon={faTrash} />
               </button>
             </div>

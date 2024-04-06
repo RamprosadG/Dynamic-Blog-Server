@@ -83,7 +83,7 @@ const BlogPage = () => {
     e.preventDefault();
     try {
       const formData = {
-        id: location.state.id,
+        id: id,
         topicId: topic,
         title: title,
         description: description,

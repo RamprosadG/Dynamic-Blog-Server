@@ -49,7 +49,6 @@ exports.registerNewUser = async (data, hashedPassword) => {
   const query = `INSERT INTO public.users (username, email, first_name, last_name, password, role) 
              VALUES ('${userName}', '${email}', '${firstName}', '${lastName}', '${hashedPassword}', 'General')`;
 
-  console.log(query);
   try {
     await sql.connect();
     await sql.query(query);

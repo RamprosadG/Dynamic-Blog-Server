@@ -21,7 +21,7 @@ exports.getTopic = async (req, res) => {
   const id = req.query.id;
 
   if (!id) {
-    return res.json({ message: "Id is required.", success: false });
+    return res.json({ message: "The id is required.", success: false });
   }
   const result = await getTopicById(id);
 
@@ -34,7 +34,7 @@ exports.getTopic = async (req, res) => {
   }
   res.json({
     message: "Found the topic successfully.",
-    data: result,
+    data: result[0],
     success: true,
   });
 };
@@ -54,22 +54,19 @@ exports.addTopic = async (req, res) => {
   const name = req.body.name;
 
   if (!name) {
-    res.json({ message: "The name is required." });
-    return;
+    return res.json({ message: "The name is required.", success: false });
   }
   const existingName = await getTopicName(name);
 
   if (existingName === name) {
-    res.json({ message: "The topic already exists." });
-    return;
+    return res.json({ message: "The topic already exists.", success: false });
   }
   const result = await addNewTopic(req.body);
 
   if (!result) {
-    res.json({ message: "Internal server error." });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.json({ message: "The topic is added successfully." });
+  res.json({ message: "The topic is added successfully.", success: true });
 };
 
 exports.updateTopic = async (req, res) => {
@@ -77,57 +74,47 @@ exports.updateTopic = async (req, res) => {
   const name = req.body.name;
 
   if (!name) {
-    return res.json({ message: "Name is required." });
+    return res.json({ message: "Name is required.", success: false });
   }
 
-  const existingName = await getTopicName(name);
-
-  if (existingName === name) {
-    return res.json({ message: "The topic already exists." });
-  }
-
-  const topic = getTopicById(id);
+  const topic = await getTopicById(id);
 
   if (!topic) {
-    return res.json({ message: "Internal server error" });
+    return res.json({ message: "Internal server error.", success: false });
   }
 
   if (!topic.length) {
-    return res.json({ message: "The topic is not found." });
+    return res.json({ message: "The topic is not found.", success: false });
   }
-  const result = updateExistingTopic(req.body);
+  const result = await updateExistingTopic(req.body);
 
   if (!result) {
-    return res.json({ message: "Internal server error" });
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.json({ message: "Topic is updated successfully" });
+  res.json({ message: "Topic is updated successfully.", success: true });
 };
 
 exports.deleteTopic = async (req, res) => {
-  const id = req.body["id"];
+  const id = req.body.id;
 
   if (!id) {
-    res.json({ message: "Id is required." });
-    return;
+    return res.json({ message: "The id is required.", success: false });
   }
-  const topic = getTopicById(id);
+  const topic = await getTopicById(id);
 
   if (!topic) {
-    res.json({ message: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
 
   if (!topic.length) {
-    res.json({ message: "The topic is not found" });
-    return;
+    return res.json({ message: "The topic is not found.", success: false });
   }
-  const result = deleteExistingTopic(req.body);
+  const result = await deleteExistingTopic(req.body);
 
   if (!result) {
-    res.json({ message: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.json({ message: "Topic is deleted successfully" });
+  res.json({ message: "The topic is deleted successfully.", success: true });
 };
 
 exports.getBlog = async (req, res) => {
@@ -189,14 +176,7 @@ exports.updateBlog = async (req, res) => {
       success: false,
     });
   }
-  const existingTitle = await getBlogTitle(title);
-
-  if (existingTitle === title) {
-    return res.json({ message: "The title already exists.", success: false });
-  }
-
   const blog = await getBlogById(id);
-  console.log(blog);
 
   if (!blog) {
     return res.json({ message: "Internal server error.", success: false });
@@ -240,11 +220,15 @@ exports.getAllBlog = async (req, res) => {
   const result = await allBlog();
 
   if (!result) {
-    res.json({ message: "Internal server error." });
+    res.json({ message: "Internal server error.", success: false });
     return;
   }
 
-  res.json({ message: "All blogs are fetched successfully.", data: result });
+  res.json({
+    message: "All blogs are fetched successfully.",
+    data: result,
+    success: true,
+  });
 };
 
 exports.getBlogsForTable = async (req, res) => {

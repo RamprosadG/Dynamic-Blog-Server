@@ -52,7 +52,6 @@ exports.getBlogDescription = async (description) => {
 };
 
 exports.addNewBlog = async (data) => {
-  console.log(data);
   const sql = new Client(postgresql);
   const title = data.title;
   const description = data.description;
@@ -66,7 +65,6 @@ exports.addNewBlog = async (data) => {
                   date, status) VALUES ('${title}', '${description}', '${publishDate}',
                   '${userId}', '${topicId}', '${date}', ${status})`;
 
-  console.log(query);
   try {
     await sql.connect();
     await sql.query(query);

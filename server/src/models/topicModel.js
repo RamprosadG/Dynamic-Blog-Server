@@ -11,7 +11,7 @@ exports.getTopicById = async (id) => {
     await sql.end();
     return result.rows;
   } catch (err) {
-    return null;
+    return false;
   }
 };
 

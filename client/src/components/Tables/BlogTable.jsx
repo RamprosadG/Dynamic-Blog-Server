@@ -101,7 +101,6 @@ const BlogTable = () => {
     const formData = {
       id: id,
     };
-    console.log(formData);
     await axios
       .delete("http://localhost:5000/admin/deleteBlog", {
         data: formData,

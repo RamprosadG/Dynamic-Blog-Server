@@ -1,15 +1,37 @@
 import { Button } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 
-const TopicPage = (props) => {
+const TopicPage = () => {
   const [topicName, setTopicName] = useState("");
   const navigate = useNavigate();
+  const { option } = useParams();
   const location = useLocation();
-  //console.log(location.state.id);
-  console.log(location);
+  const id = location.state.id;
+
+  useEffect(() => {
+    if (option == "Update") {
+      setTopicValue();
+    }
+  }, []);
+
+  const setTopicValue = () => {
+    const formData = {
+      id: id,
+    };
+    axios
+      .get("http://localhost:5000/admin/getTopic", {
+        params: formData,
+      })
+      .then((response) => {
+        setTopicName(response.data.data.name);
+      })
+      .catch(() => {
+        console.log("server error");
+      });
+  };
 
   const handleTopicName = (event) => {
     setTopicName(event.target.value);
@@ -32,33 +54,31 @@ const TopicPage = (props) => {
       await axios
         .post("http://localhost:5000/admin/addTopic", formData)
         .then((response) => {
-          const successfulResponse = "The topic is added successfully.";
           alert(response.data.message);
-          response.data.message == successfulResponse && navigate("/admin");
+          response.data.success && navigate("/admin");
+        });
+    } catch (error) {
+      console.log("Error to add topic");
+    }
+  };
+
+  const handleUpdateTopic = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = {
+        id: id,
+        name: topicName,
+      };
+      await axios
+        .put("http://localhost:5000/admin/updateTopic", formData)
+        .then((response) => {
+          alert(response.data.message);
+          response.data.success && navigate("/admin");
         });
     } catch (error) {
       console.log("There is an error");
     }
   };
-
-  // const handleUpdateTopic = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const formData = {
-  //       id: data.id,
-  //       name: topicName,
-  //     };
-  //     await axios
-  //       .put("http://localhost:5000/admin/updateTopic", formData)
-  //       .then((response) => {
-  //         const successfulResponse = "The topic is updated successfully.";
-  //         response.data.message === successfulResponse && setNavigate(true);
-  //         alert(response.data.message);
-  //       });
-  //   } catch (error) {
-  //     console.log("There is an error");
-  //   }
-  // };
 
   return (
     <>
@@ -66,14 +86,12 @@ const TopicPage = (props) => {
         <Card className="card-width">
           <Card.Body>
             <Card.Title className="text-center">Add a topic</Card.Title>
-
             <Form className="my-3">
-              <Form.Group controlId="formInput">
+              <Form.Group controlId="topic-name">
                 <Form.Label>Topic name</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Enter topic name"
-                  required
                   value={topicName}
                   onChange={handleTopicName}
                 />
@@ -91,9 +109,9 @@ const TopicPage = (props) => {
               <Button
                 variant="outline-secondary"
                 className="ms-2"
-                onClick={handleAddTopic}
+                onClick={option === "Add" ? handleAddTopic : handleUpdateTopic}
               >
-                Add topic
+                {option} topic
               </Button>
             </div>
 

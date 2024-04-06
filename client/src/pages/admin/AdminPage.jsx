@@ -28,7 +28,7 @@ const AdminPage = () => {
             <h1>List of topic</h1>
           </div>
           <div className="col d-flex justify-content-end">
-            <Link to="/topic/add">
+            <Link to="/topic/Add" state={{ id: 0 }}>
               <button type="button" className="btn btn-outline-secondary">
                 Add a topic
               </button>
