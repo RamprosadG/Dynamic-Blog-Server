@@ -1,146 +1,49 @@
-const { Client } = require("pg");
-const postgresql = require("../config/dbConfig");
+const {
+  fetchSidebarData,
+  getOneBlogbyIdFromDatabase,
+  getRandomBlogIdFromDatabase,
+} = require("../models/blogModel");
+const { formatSidebarData } = require("../utils/utils");
 
-const getUsers = async (req, res) => {
-  const data = [
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-    {
-      title: "Depth first Search",
-      author: "Ramprosad Gharami",
-      topic: "Graph theory",
-      status: "Published",
-      date: "3-27-2023 4:10 PM",
-      publish_date: "3-27-2023 4:10 PM",
-    },
-  ];
-  res.status(200).json(data);
+exports.getSidebarData = async (req, res) => {
+  const result = await fetchSidebarData(req.query);
+
+  if (!result) {
+    return res.json({ message: "Internal server error.", success: false });
+  }
+  const sidebarData = await formatSidebarData(result);
+
+  res.json({
+    message: "Fetched the sidebar data successfully.",
+    data: sidebarData,
+    success: true,
+  });
 };
 
-module.exports = getUsers;
+exports.getOneBlogbyId = async (req, res) => {
+  const result = await getOneBlogbyIdFromDatabase(req.query);
+
+  if (!result) {
+    return res.json({ message: "Internal server error.", success: false });
+  }
+
+  res.json({
+    message: "Fetched the blog successfully.",
+    data: result[0],
+    success: true,
+  });
+};
+
+exports.getRandomBlogId = async (req, res) => {
+  const result = await getRandomBlogIdFromDatabase();
+
+  if (!result) {
+    return res.json({ message: "Internal server error.", success: false });
+  }
+
+  res.json({
+    message: "Fetched the blog successfully.",
+    data: result[0],
+    success: true,
+  });
+};

@@ -14,9 +14,12 @@ const TextEditor = ({ updateDescription, value }) => {
 
   const modules = {
     toolbar: [
-      [{ header: "1" }, { header: "2" }, { font: [] }],
-      [{ size: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ header: [1, 2, 3, 4, 5, 6] }, { size: [] }, { font: [] }],
+      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+      [{ align: [] }],
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote", "code-block"],
+      [{ script: "sub" }, { script: "super" }],
       [
         { list: "ordered" },
         { list: "bullet" },
@@ -36,9 +39,14 @@ const TextEditor = ({ updateDescription, value }) => {
     "size",
     "bold",
     "italic",
+    "align",
+    "color",
+    "background",
+    "script",
     "underline",
     "strike",
     "blockquote",
+    "code-block",
     "list",
     "bullet",
     "indent",

@@ -101,7 +101,7 @@ const BlogPage = () => {
 
   return (
     <>
-      <div className="my-3">
+      <div className="blog-page my-3">
         <Card>
           <Card.Body>
             <Card.Title className="text-center mb-4">Add a blog</Card.Title>

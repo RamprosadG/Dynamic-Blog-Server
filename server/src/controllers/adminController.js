@@ -1,7 +1,6 @@
 const {
   getBlogById,
   getBlogTitle,
-  getBlogDescription,
   addNewBlog,
   updateExistingBlog,
   deleteExistingBlog,

@@ -21,6 +21,34 @@
   width: 50%;
 }
 
-.ql-container.ql-snow {
+.blog-page .ql-container.ql-snow {
   min-height: 300px;
+}
+
+.home-page-blog {
+  background-color: #e3e8e5;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.home-page-sidebar {
+  background-color: #dbdfdc;
+  border-radius: 5px;
+  min-height: 550px;
+  overflow-y: auto;
+}
+
+.home-page-search {
+  background-color: #f4f5f6 !important;
+}
+
+.home-page-blog .ql-container.ql-snow {
+  border: none !important;
+}
+
+.ql-snow .ql-editor pre.ql-syntax {
+  background-color: white !important;
+  color: black !important;
+  font-size: 18px;
+  border: 1px solid black;
 }

@@ -191,3 +191,77 @@ exports.getBlogInfoForTable = async (data) => {
     return false;
   }
 };
+
+exports.fetchSidebarData = async (data) => {
+  const search = data.search.toLowerCase();
+  const sql = new Client(postgresql);
+  let query = ` SELECT
+                blog.id AS id,
+                blog.title AS blog,
+                topic.name AS topic
+                FROM public.blog
+                LEFT JOIN public.topic ON topic.id = blog.topic_id `;
+
+  if (search) {
+    query += ` WHERE LOWER(blog.title) LIKE '%${search}%' `;
+  }
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+
+    if (!result.rows.length) {
+      return false;
+    }
+    return result.rows;
+  } catch (err) {
+    return false;
+  }
+};
+
+exports.getOneBlogbyIdFromDatabase = async (data) => {
+  const id = data.id;
+  const sql = new Client(postgresql);
+  const query = `SELECT
+                blog.title AS title,
+                blog.description AS description
+                FROM public.blog
+                WHERE id = '${id}'
+                LIMIT 1`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+
+    if (!result.rows.length) {
+      return false;
+    }
+    return result.rows;
+  } catch (err) {
+    return false;
+  }
+};
+
+exports.getRandomBlogIdFromDatabase = async () => {
+  const sql = new Client(postgresql);
+  const query = `SELECT
+                blog.id AS id
+                FROM public.blog
+                ORDER BY RANDOM()
+                LIMIT 1`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+
+    if (!result.rows.length) {
+      return false;
+    }
+    return result.rows;
+  } catch (err) {
+    return false;
+  }
+};
