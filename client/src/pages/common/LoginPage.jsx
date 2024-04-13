@@ -1,12 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  const [navigate, setNavigate] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -21,6 +21,10 @@ const LoginPage = () => {
     console.log("Forgot password clicked");
   };
 
+  const handleNavigateRegisterPage = () => {
+    navigate("/register");
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -31,8 +35,7 @@ const LoginPage = () => {
       await axios
         .post("http://localhost:5000/login", formData)
         .then((response) => {
-          const successfulResponse = "You are logged in successfully.";
-          response.data.message === successfulResponse && setNavigate(true);
+          response.data.success && navigate("/");
           alert(response.data.message);
         });
     } catch (error) {
@@ -40,15 +43,9 @@ const LoginPage = () => {
     }
   };
 
-  const handleReset = () => {
-    setEmail("");
-    setPassword("");
-  };
-
   return (
     <>
       <div className="d-flex justify-content-center">
-        {navigate && <Navigate to="/admin/home" />}
         <div className="card card-width mt-3">
           <div className="card-body">
             <div className="card-title text-center">
@@ -57,39 +54,43 @@ const LoginPage = () => {
 
             <Form>
               <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Email</Form.Label>
+                <Form.Label>Enter email</Form.Label>
                 <Form.Control
                   type="email"
-                  placeholder="Enter email"
                   value={email}
                   onChange={handleEmailChange}
                 />
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
+                <Form.Label>Enter password</Form.Label>
                 <Form.Control
                   type="password"
-                  placeholder="Enter password"
                   value={password}
                   onChange={handlePasswordChange}
                 />
               </Form.Group>
-              <div className="d-flex justify-content-end mt-3">
-                <Button variant="outline-secondary" onClick={handleReset}>
-                  Reset
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  className="ms-3"
-                  onClick={handleLogin}
-                >
-                  Login
+              <div className="d-flex justify-content-between mt-3">
+                <div>
+                  <Button
+                    variant="outline-secondary"
+                    className="ms-3"
+                    onClick={handleLogin}
+                  >
+                    Login
+                  </Button>
+                </div>
+                <div>
+                  <Button variant="link" onClick={handleForgotPassword}>
+                    Forgot Password?
+                  </Button>
+                </div>
+              </div>
+              <div className="d-flex justify-content-center mt-4">
+                <Button variant="link" onClick={handleNavigateRegisterPage}>
+                  Create an account
                 </Button>
               </div>
-              <Button variant="link" onClick={handleForgotPassword}>
-                Forgot Password?
-              </Button>
             </Form>
           </div>
         </div>

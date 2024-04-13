@@ -42,12 +42,10 @@ exports.findOneUserByUserName = async (userName) => {
 exports.registerNewUser = async (data, hashedPassword) => {
   const userName = data.userName;
   const email = data.email;
-  const firstName = data.firstName;
-  const lastName = data.lastName;
 
   const sql = new Client(postgresql);
-  const query = `INSERT INTO public.users (username, email, first_name, last_name, password, role) 
-             VALUES ('${userName}', '${email}', '${firstName}', '${lastName}', '${hashedPassword}', 'General')`;
+  const query = `INSERT INTO public.users (username, email, password, role) 
+             VALUES ('${userName}', '${email}', '${hashedPassword}', 'General')`;
 
   try {
     await sql.connect();

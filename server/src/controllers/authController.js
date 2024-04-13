@@ -13,23 +13,27 @@ exports.handleLogin = async (req, res) => {
   const password = req.body.password;
 
   if (!email || !password) {
-    res.json({ message: "Email and password are required." });
-    return;
+    return res.json({
+      message: "Email and password are required.",
+      success: false,
+    });
   }
   const user = await findOneUserByemail(email);
 
   if (!user) {
-    res.json({ message: "Your email is incorrect." });
-    return;
+    return res.json({ message: "Your email is incorrect.", success: false });
   }
 
   bcrypt.compare(password, user.password, async (err, isPasswordMatch) => {
     if (err) {
-      return res.json({ message: "Error to compare hash." });
+      return res.json({ message: "Error to compare hash.", success: false });
     }
 
     if (!isPasswordMatch) {
-      return res.json({ message: "Your password is incorrect." });
+      return res.json({
+        message: "Your password is incorrect.",
+        success: false,
+      });
     }
 
     const userInfo = {
@@ -46,11 +50,15 @@ exports.handleLogin = async (req, res) => {
       },
       (err, token) => {
         if (err) {
-          return res.json({ message: "Error to generate jwt." });
+          return res.json({
+            message: "Error to generate jwt.",
+            success: false,
+          });
         }
         res.json({
           token: "Bearer " + token,
           message: "You are logged in successfully.",
+          success: true,
         });
       }
     );
@@ -60,33 +68,30 @@ exports.handleLogin = async (req, res) => {
 exports.handleRegister = async (req, res) => {
   const userName = req.body.userName;
   const email = req.body.email;
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
   const password = req.body.password;
 
-  if (!userName || !email || !password || !firstName || !lastName) {
-    res.json({ message: "Every field is required." });
-    return;
+  if (!userName || !email || !password) {
+    return res.json({ message: "Every field is required.", success: false });
   }
   const userByEmail = await findOneUserByemail(email);
 
   if (userByEmail) {
-    res.json({ message: "This email already exists." });
-    return;
+    return res.json({ message: "This email already exists.", success: false });
   }
 
   const userByUserName = await findOneUserByUserName(userName);
 
   if (userByUserName) {
-    res.json({ message: "This user name already exists." });
-    return;
+    return res.json({
+      message: "This user name already exists.",
+      success: false,
+    });
   }
   const hashedPassword = await bcrypt.hash(password, 10);
   const result = await registerNewUser(req.body, hashedPassword);
 
   if (!result) {
-    res.json({ message: "Internal server error." });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.json({ message: "You are registered successfully." });
+  res.json({ message: "You are registered successfully.", success: true });
 };
