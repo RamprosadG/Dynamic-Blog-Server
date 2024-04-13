@@ -5,6 +5,7 @@ const adminRouter = require("./src/routes/adminRoute");
 const userRouter = require("./src/routes/userRoute");
 const authRouter = require("./src/routes/authRoute");
 const cookieParser = require("cookie-parser");
+const route = require("./src/routes/route");
 
 const app = express();
 app.use(cookieParser());
