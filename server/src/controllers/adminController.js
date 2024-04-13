@@ -1,6 +1,14 @@
 const {
   getBlogById,
   getBlogTitle,
+  addNewBlog,
+  updateExistingBlog,
+  deleteExistingBlog,
+  getBlogInfoForTable,
+} = require("../models/blogModel");
+const {
+  getTopicById,
+  allTopic,
   getBlogDescription,
   addNewBlog,
   updateExistingBlog,
@@ -12,231 +20,229 @@ const {
   addNewTopic,
   updateExistingTopic,
   deleteExistingTopic,
+  getTopicInfoForTable,
 } = require("../models/topicModel");
 
 exports.getTopic = async (req, res) => {
-  const id = req.body.id;
+  const id = req.query.id;
 
   if (!id) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+    return res.json({ message: "The id is required.", success: false });
   }
   const result = await getTopicById(id);
 
   if (!result) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error", success: false });
   }
 
   if (!result.length) {
-    res.status(404).json({ error: "The topic is not found" });
+    return res.json({ message: "The topic is not found.", success: false });
+  }
+  res.json({
+    message: "Found the topic successfully.",
+    data: result[0],
+    success: true,
+  });
+};
+
+exports.getAllTopic = async (req, res) => {
+  const result = await allTopic();
+
+  if (!result) {
+    res.json({ message: "Internal server error." });
     return;
   }
-  res
-    .status(200)
-    .json({ message: "Found the topic successfully", data: result });
+
+  res.json({ message: "All topic are fetched successfully.", data: result });
 };
 
 exports.addTopic = async (req, res) => {
-  const name = req.body["name"];
+  const name = req.body.name;
 
   if (!name) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+    return res.json({ message: "The name is required.", success: false });
   }
   const existingName = await getTopicName(name);
 
   if (existingName === name) {
-    res.status(409).json({ error: "The topic already exists" });
-    return;
+    return res.json({ message: "The topic already exists.", success: false });
   }
   const result = await addNewTopic(req.body);
 
   if (!result) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.status(201).json({ message: "Topic is added successfully" });
+  res.json({ message: "The topic is added successfully.", success: true });
 };
 
 exports.updateTopic = async (req, res) => {
-  const id = req.body["id"];
-  const name = req.body["name"];
+  const id = req.body.id;
+  const name = req.body.name;
 
   if (!name) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+    return res.json({ message: "Name is required.", success: false });
   }
 
-  const existingName = await getTopicName(name);
-
-  if (existingName === name) {
-    res.status(409).json({ Error: "The topic already exist" });
-    return;
-  }
-  const topic = getTopicById(id);
+  const topic = await getTopicById(id);
 
   if (!topic) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
 
   if (!topic.length) {
-    res.status(404).json({ error: "The topic is not found" });
-    return;
+    return res.json({ message: "The topic is not found.", success: false });
   }
-  const result = updateExistingTopic(req.body);
+  const result = await updateExistingTopic(req.body);
 
   if (!result) {
-    res.status(500).json({ Error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.status(200).json({ Message: "Topic is updated successfully" });
+  res.json({ message: "Topic is updated successfully.", success: true });
 };
 
 exports.deleteTopic = async (req, res) => {
-  const id = req.body["id"];
+  const id = req.body.id;
 
   if (!id) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+    return res.json({ message: "The id is required.", success: false });
   }
-  const topic = getTopicById(id);
+  const topic = await getTopicById(id);
 
   if (!topic) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
 
   if (!topic.length) {
-    res.status(404).json({ error: "The topic is not found" });
-    return;
+    return res.json({ message: "The topic is not found.", success: false });
   }
-  const result = deleteExistingTopic(req.body);
+  const result = await deleteExistingTopic(req.body);
 
   if (!result) {
-    res.status(500).json({ Error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.status(200).json({ Message: "Topic is deleted successfully" });
+  res.json({ message: "The topic is deleted successfully.", success: true });
 };
 
 exports.getBlog = async (req, res) => {
-  const id = req.body["id"];
+  const id = req.query.id;
 
   if (!id) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+    return res.json({ message: "The id is required.", success: false });
   }
   const result = await getBlogById(id);
 
   if (!result) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error", success: false });
   }
 
   if (!result.length) {
-    res.status(404).json({ error: "The blog is not found" });
-    return;
+    return res.json({ message: "The blog is not found", success: false });
   }
-  res
-    .status(200)
-    .json({ message: "Found the blog successfully", data: result });
+  res.json({
+    message: "Found the blog successfully",
+    data: result[0],
+    success: true,
+  });
 };
 
 exports.addBlog = async (req, res) => {
-  const title = req.body["title"];
-  const description = req.body["title"];
+  const title = req.body.title;
+  const description = req.body.description;
+  const topicId = req.body.topicId;
 
-  if (!title || !description) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+  if (!title || !description || !topicId || description === "<p><br></p>") {
+    return res.json({
+      message: "The topic, title and description are required.",
+      success: false,
+    });
   }
   const existingTitle = await getBlogTitle(title);
 
   if (existingTitle === title) {
-    res.status(409).json({ error: "The title already exists" });
-    return;
+    return res.json({ message: "The title already exists.", success: false });
   }
-  const existingDescription = await getBlogDescription(title);
 
-  if (existingDescription === description) {
-    res.status(409).json({ error: "The description already exists" });
-    return;
-  }
   const result = await addNewBlog(req.body);
 
   if (!result) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.status(201).json({ message: "Blog is added successfully" });
+  res.json({ message: "The blog is added successfully.", success: true });
 };
 
 exports.updateBlog = async (req, res) => {
-  const id = req.body["id"];
-  const description = req.body["description"];
-  const title = req.body["title"];
+  const id = req.body.id;
+  const description = req.body.description;
+  const title = req.body.title;
+  const topicId = req.body.topicId;
 
-  if (!title || !description) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+  if (!title || !description || !topicId || description === "<p><br></p>") {
+    return res.json({
+      message: "The topic, title and description are required.",
+      success: false,
+    });
   }
-  const existingTitle = await getBlogTitle(title);
-
-  if (existingTitle === title) {
-    res.status(409).json({ Error: "The title already exists" });
-    return;
-  }
-  const existingDescription = await getBlogDescription(description);
-
-  if (existingDescription === description) {
-    res.status(409).json({ Error: "The description already exists" });
-    return;
-  }
-  const blog = getBlogById(id);
+  const blog = await getBlogById(id);
 
   if (!blog) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
 
   if (!blog.length) {
-    res.status(404).json({ error: "The blog is not found" });
-    return;
+    return res.json({ message: "The blog is not found.", success: false });
   }
   const result = updateExistingBlog(req.body);
 
   if (!result) {
-    res.status(500).json({ Error: "Internal server error" });
-    return;
+    return res.json({ message: "Internal server error.", success: false });
   }
-  res.status(200).json({ Message: "Blog is updated successfully" });
+  res.json({ message: "The blog is updated successfully.", success: true });
 };
 
 exports.deleteBlog = async (req, res) => {
-  const id = req.body["id"];
+  const id = req.body.id;
 
   if (!id) {
-    res.status(400).json({ error: "Bad request" });
-    return;
+    return res.json({ message: "The id is required.", success: false });
   }
-  const topic = getBlogById(id);
+  const blog = await getBlogById(id);
 
-  if (!topic) {
-    res.status(500).json({ error: "Internal server error" });
-    return;
+  if (!blog) {
+    return res.json({ message: "Internal server error.", success: false });
   }
 
-  if (!topic.length) {
-    res.status(404).json({ error: "The blog is not found" });
-    return;
+  if (!blog.length) {
+    return res.json({ message: "The blog is not found.", success: false });
   }
-  const result = deleteExistingBlog(req.body);
+  const result = await deleteExistingBlog(req.body);
 
   if (!result) {
-    res.status(500).json({ Error: "Internal server error" });
+    return res.json({ message: "Internal server error.", success: false });
+  }
+  res.json({ message: "The blog is deleted successfully.", success: true });
+};
+
+exports.getAllBlog = async (req, res) => {
+  const result = await allBlog();
+
+  if (!result) {
+    res.json({ message: "Internal server error.", success: false });
     return;
   }
-  res.status(200).json({ Message: "Blog is deleted successfully" });
+
+  res.json({
+    message: "All blogs are fetched successfully.",
+    data: result,
+    success: true,
+  });
+};
+
+exports.getBlogsForTable = async (req, res) => {
+  const data = await getBlogInfoForTable(req.query);
+  res.json(data);
+};
+
+exports.getTopicForTable = async (req, res) => {
+  const data = await getTopicInfoForTable(req.query);
+  res.json(data);   
 };
