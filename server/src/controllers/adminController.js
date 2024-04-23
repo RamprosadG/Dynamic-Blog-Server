@@ -5,6 +5,7 @@ const {
   updateExistingBlog,
   deleteExistingBlog,
   getBlogInfoForTable,
+  getTotalRowsForBlogsTable,
 } = require("../models/blogModel");
 const {
   getTopicById,
@@ -14,6 +15,7 @@ const {
   updateExistingTopic,
   deleteExistingTopic,
   getTopicInfoForTable,
+  getTotalRowsFortopicTable,
 } = require("../models/topicModel");
 
 exports.getTopic = async (req, res) => {
@@ -232,10 +234,12 @@ exports.getAllBlog = async (req, res) => {
 
 exports.getBlogsForTable = async (req, res) => {
   const data = await getBlogInfoForTable(req.query);
-  res.json(data);
+  const totalRowsForBlogsTable = await getTotalRowsForBlogsTable(req.query);
+  res.json({ data: data, totalRows: totalRowsForBlogsTable, success: true });
 };
 
 exports.getTopicForTable = async (req, res) => {
   const data = await getTopicInfoForTable(req.query);
-  res.json(data);
+  const totalRowsForTopicTable = await getTotalRowsFortopicTable(req.query);
+  res.json({ data: data, totalRows: totalRowsForTopicTable, success: true });
 };
