@@ -130,3 +130,29 @@ exports.getTopicInfoForTable = async (data) => {
     return false;
   }
 };
+
+exports.getTotalRowsFortopicTable = async (data) => {
+  const sql = new Client(postgresql);
+  const search = data.search.toLowerCase();
+  const sortCol = data.sortCol;
+  const sortDir = data.sortDir;
+  const row = data.row;
+  const offSet = row * (data.page - 1);
+
+  let query = ` SELECT
+                COUNT(topic.id) AS totalRows
+                FROM public.topic `;
+
+  if (search) {
+    query += ` WHERE LOWER(topic.name) LIKE '%${search}%' `;
+  }
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+    return result.rows[0];
+  } catch (err) {
+    return 0;
+  }
+};

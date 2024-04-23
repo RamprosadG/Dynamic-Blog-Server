@@ -12,6 +12,7 @@ const BlogTable = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalRows, setTotalRows] = useState(0);
   const [paginationTotalRows, setPaginationTotalRows] = useState(10);
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("");
@@ -55,7 +56,8 @@ const BlogTable = () => {
           params: formData,
         })
         .then((response) => {
-          setData(response.data);
+          setData(response.data.data);
+          setTotalRows(response.data.totalRows.totalrows);
           setLoading(false);
         });
     } catch (error) {
@@ -251,9 +253,10 @@ const BlogTable = () => {
         progressPending={loading}
         pagination
         paginationServer
-        onChangePage={handlePageChange}
-        onChangeRowsPerPage={handleRowsPerPageChange}
+        paginationTotalRows={totalRows}
         paginationRowsPerPageOptions={[10, 25, 50, 100]}
+        onChangeRowsPerPage={handleRowsPerPageChange}
+        onChangePage={handlePageChange}
         sortServer
         onSort={handleSort}
       />

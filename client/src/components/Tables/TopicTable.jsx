@@ -12,10 +12,10 @@ const TopicTable = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationTotalRows, setPaginationTotalRows] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -36,7 +36,8 @@ const TopicTable = () => {
           params: formData,
         })
         .then((response) => {
-          setData(response.data);
+          setData(response.data.data);
+          setTotalRows(response.data.totalRows.totalrows);
           setLoading(false);
         });
     } catch (error) {
@@ -145,9 +146,9 @@ const TopicTable = () => {
         progressPending={loading}
         pagination
         paginationServer
-        onChangePage={handlePageChange}
+        paginationTotalRows={totalRows}
         onChangeRowsPerPage={handleRowsPerPageChange}
-        paginationRowsPerPageOptions={[10, 25, 50, 100]}
+        onChangePage={handlePageChange}
         sortServer
         onSort={handleSort}
       />
