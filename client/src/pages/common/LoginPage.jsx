@@ -1,20 +1,32 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { useFormik } from "formik";
 import { Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { loginSchema } from "../../schema/loginForm";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit: (values) => {
+      try {
+        axios.post("http://localhost:5000/login", values).then((response) => {
+          // setIsLoggedIn(true);
+          // setUserInfo(response.data.data);
+          response.data.success && navigate("/");
+          alert(response.data.message);
+        });
+      } catch (error) {
+        console.log("There is an error", error);
+      }
+    },
+  });
 
   const handleForgotPassword = () => {
     // Need to code to handle forgot password
@@ -25,72 +37,65 @@ const LoginPage = () => {
     navigate("/register");
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = {
-        email: email,
-        password: password,
-      };
-      await axios
-        .post("http://localhost:5000/login", formData)
-        .then((response) => {
-          response.data.success && navigate("/");
-          alert(response.data.message);
-        });
-    } catch (error) {
-      console.log("There is an error", error);
-    }
-  };
-
   return (
     <>
       <div className="d-flex justify-content-center">
         <div className="card card-width mt-3">
           <div className="card-body">
-            <div className="card-title text-center">
+            <div className="card-title text-center mb-5">
               <h2>Login</h2>
             </div>
 
-            <Form>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Enter email</Form.Label>
+            <Form onSubmit={formik.handleSubmit}>
+              <Form.Group className="mb-4">
                 <Form.Control
+                  id="email"
+                  name="email"
                   type="email"
-                  value={email}
-                  onChange={handleEmailChange}
+                  placeholder="Email"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.email}
                 />
+                {formik.touched.email && formik.errors.email ? (
+                  <div>{formik.errors.email}</div>
+                ) : null}
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Enter password</Form.Label>
+              <Form.Group className="mb-4">
                 <Form.Control
+                  id="password"
+                  name="password"
                   type="password"
-                  value={password}
-                  onChange={handlePasswordChange}
+                  placeholder="Password"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.password}
                 />
+                {formik.touched.password && formik.errors.password ? (
+                  <div>{formik.errors.password}</div>
+                ) : null}
+                <Form.Control.Feedback type="invalid">
+                  Please choose a password.
+                </Form.Control.Feedback>
               </Form.Group>
-              <div className="d-flex justify-content-between mt-3">
+              <Form.Group className="d-flex justify-content-between mt-3">
                 <div>
-                  <Button
-                    variant="outline-secondary"
-                    className="ms-3"
-                    onClick={handleLogin}
-                  >
+                  <button className="btn btn-outline-secondary" type="submit">
                     Login
-                  </Button>
+                  </button>
                 </div>
                 <div>
                   <Button variant="link" onClick={handleForgotPassword}>
                     Forgot Password?
                   </Button>
                 </div>
-              </div>
-              <div className="d-flex justify-content-center mt-4">
+              </Form.Group>
+              <Form.Group className="d-flex justify-content-center mt-4">
                 <Button variant="link" onClick={handleNavigateRegisterPage}>
                   Create an account
                 </Button>
-              </div>
+              </Form.Group>
             </Form>
           </div>
         </div>
