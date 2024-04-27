@@ -13,8 +13,6 @@ const HomePage = () => {
   const [blogData, setBlogData] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  const { userInfo } = useContext(AuthContext);
-
   useEffect(() => {
     fetchSidebarData();
   }, [searchText]);

@@ -81,9 +81,9 @@ const LoginPage = () => {
               </Form.Group>
               <Form.Group className="d-flex justify-content-between mt-3">
                 <div>
-                  <button className="btn btn-outline-secondary" type="submit">
+                  <Button variant="outline-secondary" type="submit">
                     Login
-                  </button>
+                  </Button>
                 </div>
                 <div>
                   <Button variant="link" onClick={handleForgotPassword}>
