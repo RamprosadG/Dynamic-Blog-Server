@@ -1,16 +1,19 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Row, Col } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import ReactQuill from "react-quill";
 import { Form } from "react-bootstrap";
+import AuthContext from "../../context/authContext";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);
   const [lastSelectedItem, setLastSelectedItem] = useState(null);
   const [blogData, setBlogData] = useState(null);
   const [searchText, setSearchText] = useState("");
+
+  const { userInfo } = useContext(AuthContext);
 
   useEffect(() => {
     fetchSidebarData();
