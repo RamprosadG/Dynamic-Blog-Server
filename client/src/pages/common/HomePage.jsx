@@ -5,7 +5,6 @@ import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import ReactQuill from "react-quill";
 import { Form } from "react-bootstrap";
-import AuthContext from "../../context/authContext";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);

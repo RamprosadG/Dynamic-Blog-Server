@@ -6,8 +6,8 @@ const {
 
 const userRouter = require("express").Router();
 
-userRouter.get("/getSidebarData", getSidebarData);
-userRouter.get("/getOneBlogbyId", getOneBlogbyId);
-userRouter.get("/getRandomBlogId", getRandomBlogId);
+userRouter.get("/blog/all/sidebar", getSidebarData);
+userRouter.get("/blog/:id", getOneBlogbyId);
+userRouter.get("/blog/random", getRandomBlogId);
 
 module.exports = userRouter;

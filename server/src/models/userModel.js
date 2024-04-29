@@ -1,9 +1,9 @@
 const { Client } = require("pg");
 const postgresql = require("../config/dbConfig");
 
-exports.findOneUserByemail = async (email) => {
+exports.getOneUserByEmailDB = async (email) => {
   const sql = new Client(postgresql);
-  const query = `SELECT username, password FROM public.users WHERE email = '${email}' LIMIT 1`;
+  const query = `SELECT id, username, password, role FROM public.users WHERE email = '${email}' LIMIT 1`;
 
   try {
     await sql.connect();
@@ -39,9 +39,8 @@ exports.findOneUserByUserName = async (userName) => {
   }
 };
 
-exports.registerNewUser = async (data, hashedPassword) => {
-  const userName = data.userName;
-  const email = data.email;
+exports.createUserDB = async (data, hashedPassword) => {
+  const { userName, email } = data;
 
   const sql = new Client(postgresql);
   const query = `INSERT INTO public.users (username, email, password, role) 
