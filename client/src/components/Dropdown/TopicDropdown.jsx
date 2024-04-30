@@ -17,7 +17,7 @@ const TopicDropdown = ({ value, updateTopic }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/admin/getAllTopic")
+      .get("http://localhost:5000/api/admin/topic/all")
       .then((response) => {
         const topic = response.data.data;
         setOptions(topic);

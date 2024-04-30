@@ -22,4 +22,6 @@ const sendNewsLetter = async (mailData) => {
   return info;
 };
 
-module.exports = sendNewsLetter;
+module.exports = {
+  sendNewsLetter,
+};

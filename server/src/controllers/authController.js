@@ -1,10 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { userSecretKey } = require("../config/authKey");
-
 const { getOneUserByEmailDB, createUserDB } = require("../models/userModel");
+const { USER_SECRET_KEY } = require("../config/config");
 
-exports.handleLogin = async (req, res) => {
+const handleLogin = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await getOneUserByEmailDB(email);
@@ -41,12 +40,12 @@ exports.handleLogin = async (req, res) => {
   });
 };
 
-exports.handleLogout = async (req, res) => {
+const handleLogout = async (req, res) => {
   res.clearCookie("userToken");
   res.json({ message: "Logged out successfully", success: true });
 };
 
-exports.handleRegister = async (req, res) => {
+const handleRegister = async (req, res) => {
   const { email, password } = req.body;
 
   const userByEmail = await getOneUserByEmailDB(email);
@@ -63,4 +62,10 @@ exports.handleRegister = async (req, res) => {
   }
 
   res.json({ message: "You are registered successfully.", success: true });
+};
+
+module.exports = {
+  handleLogin,
+  handleLogout,
+  handleRegister,
 };

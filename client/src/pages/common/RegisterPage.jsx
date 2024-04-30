@@ -16,10 +16,9 @@ const RegisterPage = () => {
     },
     validationSchema: registerSchema,
     onSubmit: (values) => {
-      console.log(values);
       try {
         axios
-          .post("http://localhost:5000/register", values)
+          .post("http://localhost:5000/api/register", values)
           .then((response) => {
             response.data.success && navigate("/");
             alert(response.data.message);

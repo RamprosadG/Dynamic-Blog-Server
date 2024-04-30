@@ -1,7 +1,7 @@
-exports.formatSidebarData = (data) => {
+const formatSidebarData = async (data) => {
   const dictionary = {};
 
-  data.map((item) => {
+  data?.map((item) => {
     if (!dictionary[item.topic]) {
       dictionary[item.topic] = [];
     }
@@ -10,8 +10,12 @@ exports.formatSidebarData = (data) => {
   const keys = Object.keys(dictionary);
   const formattedData = [];
 
-  keys.map((item) => {
+  keys?.map((item) => {
     formattedData.push({ id: item, label: item, children: dictionary[item] });
   });
   return formattedData;
+};
+
+module.exports = {
+  formatSidebarData,
 };

@@ -18,13 +18,8 @@ const TopicPage = () => {
   }, []);
 
   const setTopicValue = () => {
-    const formData = {
-      id: id,
-    };
     axios
-      .get("http://localhost:5000/admin/getTopic", {
-        params: formData,
-      })
+      .get(`http://localhost:5000/api/admin/topic/single/${id}`)
       .then((response) => {
         setTopicName(response.data.data.name);
       })
@@ -51,8 +46,8 @@ const TopicPage = () => {
       const formData = {
         name: topicName,
       };
-      await axios
-        .post("http://localhost:5000/admin/addTopic", formData)
+      axios
+        .post("http://localhost:5000/api/admin/topic/create", formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -66,11 +61,10 @@ const TopicPage = () => {
     e.preventDefault();
     try {
       const formData = {
-        id: id,
         name: topicName,
       };
-      await axios
-        .put("http://localhost:5000/admin/updateTopic", formData)
+      axios
+        .put(`http://localhost:5000/api/admin/topic/update/${id}`, formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");

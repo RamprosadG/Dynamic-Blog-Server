@@ -52,7 +52,7 @@ const BlogTable = () => {
       };
 
       axios
-        .get("http://localhost:5000/admin/getBlogsForTable", {
+        .get("http://localhost:5000/api/admin/blog/table", {
           params: formData,
         })
         .then((response) => {
@@ -100,13 +100,8 @@ const BlogTable = () => {
   };
 
   const handleDeleteBlog = async (id) => {
-    const formData = {
-      id: id,
-    };
     await axios
-      .delete("http://localhost:5000/admin/deleteBlog", {
-        data: formData,
-      })
+      .delete(`http://localhost:5000/api/admin/blog/remove/${id}`)
       .then((response) => {
         alert(response.data.message);
         response.data.success && fetchData();

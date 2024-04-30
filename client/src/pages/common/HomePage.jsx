@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
@@ -17,24 +17,10 @@ const HomePage = () => {
   }, [searchText]);
 
   useEffect(() => {
-    fetchBlogData();
-  }, [lastSelectedItem]);
-
-  useEffect(() => {
-    fetchRandomBlogId();
-  }, []);
-
-  const fetchRandomBlogId = () => {
-    try {
-      axios
-        .get("http://localhost:5000/user/getRandomBlogId")
-        .then((response) => {
-          setLastSelectedItem(response.data.data.id);
-        });
-    } catch (error) {
-      console.log("There is an error to fetch sidebar data");
+    if (lastSelectedItem) {
+      fetchBlogData();
     }
-  };
+  }, [lastSelectedItem]);
 
   const fetchSidebarData = () => {
     const formData = {
@@ -42,7 +28,7 @@ const HomePage = () => {
     };
     try {
       axios
-        .get("http://localhost:5000/user/getSidebarData", {
+        .get("http://localhost:5000/api/user/sidebar", {
           params: formData,
         })
         .then((response) => {
@@ -55,13 +41,8 @@ const HomePage = () => {
 
   const fetchBlogData = () => {
     try {
-      const formData = {
-        id: lastSelectedItem,
-      };
       axios
-        .get("http://localhost:5000/user/getOneBlogById", {
-          params: formData,
-        })
+        .get(`http://localhost:5000/api/user/blog/single/${lastSelectedItem}`)
         .then((response) => {
           setBlogData(response.data.data);
         });
@@ -77,7 +58,6 @@ const HomePage = () => {
   };
 
   const handleSearchChange = (e) => {
-    console.log(e.target.value);
     setSearchText(e.target.value);
   };
 

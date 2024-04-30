@@ -1,31 +1,51 @@
 const {
-  getTopic,
-  getAllTopic,
-  addTopic,
-  updateTopic,
-  deleteTopic,
-  getBlog,
-  addBlog,
+  createBlog,
+  getOneBlogById,
   updateBlog,
   deleteBlog,
-  getBlogsForTable,
+  getBlogForTable,
+} = require("../controllers/blogController");
+const {
+  createTopic,
+  getOneTopicById,
+  getAllTopic,
+  updateTopic,
+  deleteTopic,
   getTopicForTable,
-} = require("../controllers/adminController");
+} = require("../controllers/topicController");
+const { createBlogSchema, updateBlogSchema } = require("../schema/blogSchema");
+const {
+  createTopicSchema,
+  updateTopicSchema,
+} = require("../schema/topicSchema");
+const validateRequest = require("../utils/zodValidation");
 
 const adminRouter = require("express").Router();
 
-adminRouter.get("/topic/single/:id", getTopic);
-adminRouter.post("/topic/create", addTopic);
-adminRouter.put("/topic/update:/id", updateTopic);
-adminRouter.delete("/topic/remove/:id", deleteTopic);
+adminRouter.post(
+  "/topic/create",
+  validateRequest(createTopicSchema),
+  createTopic
+);
+adminRouter.get("/topic/single/:id", getOneTopicById);
 adminRouter.get("/topic/all", getAllTopic);
+adminRouter.put(
+  "/topic/update/:id",
+  validateRequest(updateTopicSchema),
+  updateTopic
+);
+adminRouter.delete("/topic/remove/:id", deleteTopic);
 
-adminRouter.get("/blog/single/:id", getBlog);
-adminRouter.post("/blog/create", addBlog);
-adminRouter.put("/blog/update/:id", updateBlog);
+adminRouter.post("/blog/create", validateRequest(createBlogSchema), createBlog);
+adminRouter.get("/blog/single/:id", getOneBlogById);
+adminRouter.put(
+  "/blog/update/:id",
+  validateRequest(updateBlogSchema),
+  updateBlog
+);
 adminRouter.delete("/blog/remove/:id", deleteBlog);
 
-adminRouter.get("/blog/table", getBlogsForTable);
+adminRouter.get("/blog/table", getBlogForTable);
 adminRouter.get("/topic/table", getTopicForTable);
 
 module.exports = adminRouter;

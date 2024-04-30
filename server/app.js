@@ -10,7 +10,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
-app.use(GlobalError());
+app.use(GlobalError);
 app.use("/api", router);
 
 module.exports = app;

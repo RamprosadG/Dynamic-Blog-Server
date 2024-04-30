@@ -1,11 +1,11 @@
-const zod = require("zod");
+const z = require("zod");
 
-const userSchema = zod.object({
-  body: zod.object({
-    username: zod.string(),
-    email: zod.string().email(),
-    password: zod.string(),
+const createUserSchema = z.object({
+  body: z.object({
+    username: z.string(),
+    email: z.string().email(),
+    password: z.string(),
   }),
 });
 
-module.exports = userSchema;
+module.exports = createUserSchema;

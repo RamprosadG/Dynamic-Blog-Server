@@ -1,65 +1,12 @@
 const { Client } = require("pg");
 const postgresql = require("../config/dbConfig");
 
-exports.getBlogById = async (id) => {
+const createBlogDB = async (data) => {
   const sql = new Client(postgresql);
-  const query = `SELECT * FROM public.blog WHERE id = '${id}'`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-    return result.rows;
-  } catch (err) {
-    return false;
-  }
-};
-
-exports.getBlogTitle = async (title) => {
-  const sql = new Client(postgresql);
-  const query = `SELECT title FROM public.blog WHERE title = '${title}'`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-    if (!result.rows.length) {
-      return false;
-    }
-    const blogTitle = result.rows[0].title;
-    return blogTitle;
-  } catch (err) {
-    return false;
-  }
-};
-
-exports.getBlogDescription = async (description) => {
-  const sql = new Client(postgresql);
-  const query = `SELECT description FROM public.blog WHERE description = '${description}'`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-    if (!result.rows.length) {
-      return false;
-    }
-    const blogDescription = result.rows[0].description;
-    return blogDescription;
-  } catch (err) {
-    return false;
-  }
-};
-
-exports.addNewBlog = async (data) => {
-  const sql = new Client(postgresql);
-  const title = data.title;
-  const description = data.description;
-  const userId = data.userId;
-  const topicId = data.topicId;
-  const date = data.date;
-  const publishDate = data.publishDate;
-  const status = data.status;
+  const { title, description, userId, topicId } = data;
+  const date = new Date().toISOString();
+  const publishDate = new Date().toISOString();
+  const status = false;
 
   const query = `INSERT INTO public.blog (title, description, publish_date, user_id, topic_id,
                   date, status) VALUES ('${title}', '${description}', '${publishDate}',
@@ -75,25 +22,62 @@ exports.addNewBlog = async (data) => {
   }
 };
 
-exports.allBlog = async () => {
+const getOneBlogByIdDB = async (id) => {
+  const sql = new Client(postgresql);
+  const query = `SELECT * FROM public.blog WHERE id = '${id}'`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+
+    if (!result || !result.rows.length) {
+      return false;
+    }
+    return result.rows[0];
+  } catch (err) {
+    return false;
+  }
+};
+
+const getOneBlogByTitleDB = async (title) => {
+  const sql = new Client(postgresql);
+  const query = `SELECT * FROM public.blog WHERE title = '${title}'`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+    if (!result.rows.length) {
+      return false;
+    }
+    const blogTitle = result.rows[0].title;
+    return blogTitle;
+  } catch (err) {
+    return false;
+  }
+};
+
+const getAllBlogDB = async () => {
   const query = `SELECT title, publish_date, user_id, topic_id, date, status FROM public.blog`;
 
   try {
     await sql.connect();
-    const data = await sql.query(query);
+    const result = await sql.query(query);
     await sql.end();
+
+    if (!result || !result.rows.length) {
+      return false;
+    }
     return data.rows;
   } catch (err) {
     return false;
   }
 };
 
-exports.updateExistingBlog = async (data) => {
+const updateBlogDB = async (id, data) => {
   const sql = new Client(postgresql);
-  const id = data.id;
-  const title = data.title;
-  const description = data.description;
-  const topicId = data.topicId;
+  const { title, description, topicId } = data;
 
   const query = `UPDATE public.blog SET title = '${title}', description = '${description}', topic_id = '${topicId}' WHERE id = '${id}'`;
 
@@ -107,11 +91,9 @@ exports.updateExistingBlog = async (data) => {
   }
 };
 
-exports.deleteExistingBlog = async (data) => {
+const deleteBlogDB = async (id) => {
   const sql = new Client(postgresql);
-  const id = data.id;
   const query = `DELETE FROM public.blog WHERE id = '${id}'`;
-
   try {
     await sql.connect();
     await sql.query(query);
@@ -122,16 +104,10 @@ exports.deleteExistingBlog = async (data) => {
   }
 };
 
-exports.getBlogInfoForTable = async (data) => {
+const getBlogForTableDB = async (data) => {
   const sql = new Client(postgresql);
-  const search = data.search.toLowerCase();
-  const sortCol = data.sortCol;
-  const sortDir = data.sortDir;
-  const topic = data.topic;
-  const startDate = data.startDate;
-  const endDate = data.endDate;
-  const status = data.status;
-  const row = data.row;
+  const search = data.search?.toLowerCase();
+  const { sortCol, sortDir, topic, startDate, endDate, status, row } = data;
   const offSet = row * (data.page - 1);
 
   let query = ` SELECT
@@ -192,17 +168,13 @@ exports.getBlogInfoForTable = async (data) => {
   }
 };
 
-exports.getTotalRowsForBlogsTable = async (data) => {
+const getTotalRowsForBlogTableDB = async (data) => {
   const sql = new Client(postgresql);
   const search = data.search.toLowerCase();
-  const sortCol = data.sortCol;
-  const sortDir = data.sortDir;
   const topic = data.topic;
   const startDate = data.startDate;
   const endDate = data.endDate;
   const status = data.status;
-  const row = data.row;
-  const offSet = row * (data.page - 1);
 
   let query = ` SELECT
                 COUNT(blog.id) AS totalRows
@@ -249,8 +221,8 @@ exports.getTotalRowsForBlogsTable = async (data) => {
   }
 };
 
-exports.fetchSidebarData = async (data) => {
-  const search = data.search.toLowerCase();
+const getSidebarDataDB = async (data) => {
+  const search = data?.search?.toLowerCase();
   const sql = new Client(postgresql);
   let query = ` SELECT
                 blog.id AS id,
@@ -267,58 +239,20 @@ exports.fetchSidebarData = async (data) => {
     await sql.connect();
     const result = await sql.query(query);
     await sql.end();
-
-    if (!result.rows.length) {
-      return false;
-    }
     return result.rows;
   } catch (err) {
     return false;
   }
 };
 
-exports.getOneBlogbyIdFromDatabase = async (data) => {
-  const id = data.id;
-  const sql = new Client(postgresql);
-  const query = `SELECT
-                blog.title AS title,
-                blog.description AS description
-                FROM public.blog
-                WHERE id = '${id}'
-                LIMIT 1`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-
-    if (!result.rows.length) {
-      return false;
-    }
-    return result.rows;
-  } catch (err) {
-    return false;
-  }
-};
-
-exports.getRandomBlogIdFromDatabase = async () => {
-  const sql = new Client(postgresql);
-  const query = `SELECT
-                blog.id AS id
-                FROM public.blog
-                ORDER BY RANDOM()
-                LIMIT 1`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-
-    if (!result.rows.length) {
-      return false;
-    }
-    return result.rows;
-  } catch (err) {
-    return false;
-  }
+module.exports = {
+  createBlogDB,
+  getOneBlogByIdDB,
+  getOneBlogByTitleDB,
+  getAllBlogDB,
+  updateBlogDB,
+  deleteBlogDB,
+  getBlogForTableDB,
+  getTotalRowsForBlogTableDB,
+  getSidebarDataDB,
 };

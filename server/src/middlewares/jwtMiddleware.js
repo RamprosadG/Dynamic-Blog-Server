@@ -3,7 +3,6 @@ const { userSecretKey, adminSecretKey } = require("../config/authKey");
 
 exports.jwtUserAuthenticate = (req, res, next) => {
   const userToken = req.cookies.userToken;
-  console.log(userToken);
 
   if (!userToken) {
     return res.json({ message: "Unauthorized", success: false });
