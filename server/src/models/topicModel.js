@@ -1,56 +1,10 @@
 const { Client } = require("pg");
 const postgresql = require("../config/dbConfig");
 
-exports.getTopicById = async (id) => {
+const createTopicDB = async (data) => {
   const sql = new Client(postgresql);
-  const query = `SELECT * FROM public.topic WHERE id = '${id}'`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-    return result.rows;
-  } catch (err) {
-    return false;
-  }
-};
-
-exports.allTopic = async () => {
-  const sql = new Client(postgresql);
-  const query = `SELECT * FROM public.topic`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-    return result.rows;
-  } catch (err) {
-    return null;
-  }
-};
-
-exports.getTopicName = async (name) => {
-  const sql = new Client(postgresql);
-  const query = `SELECT name FROM public.topic WHERE name = '${name}'`;
-
-  try {
-    await sql.connect();
-    const result = await sql.query(query);
-    await sql.end();
-    if (!result.rows.length) {
-      return null;
-    }
-    const topicName = result.rows[0].name;
-    return topicName;
-  } catch (err) {
-    return null;
-  }
-};
-
-exports.addNewTopic = async (data) => {
-  const sql = new Client(postgresql);
-  const topicName = data.name;
-  const query = `INSERT INTO public.topic (name) VALUES ('${topicName}')`;
+  const { name } = data;
+  const query = `INSERT INTO public.topic (name) VALUES ('${name}')`;
 
   try {
     await sql.connect();
@@ -62,10 +16,59 @@ exports.addNewTopic = async (data) => {
   }
 };
 
-exports.updateExistingTopic = async (data) => {
+const getOneTopicByNameDB = async (name) => {
   const sql = new Client(postgresql);
-  const id = data.id;
-  const name = data.name;
+  const query = `SELECT * FROM public.topic WHERE id = '${name}' LIMIT 1`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+
+    if (!result || !result.rows.length) {
+      return false;
+    }
+    return result.rows[0];
+  } catch (err) {
+    return false;
+  }
+};
+
+const getOneTopicByIdDB = async (id) => {
+  const sql = new Client(postgresql);
+  const query = `SELECT * FROM public.topic WHERE id = '${id}' LIMIT 1`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+
+    if (!result || !result.rows.length) {
+      return false;
+    }
+    return result.rows[0];
+  } catch (err) {
+    return false;
+  }
+};
+
+const getAllTopicDB = async () => {
+  const sql = new Client(postgresql);
+  const query = `SELECT * FROM public.topic`;
+
+  try {
+    await sql.connect();
+    const result = await sql.query(query);
+    await sql.end();
+    return result.rows;
+  } catch (err) {
+    return false;
+  }
+};
+
+const updateTopicDB = async (id, data) => {
+  const sql = new Client(postgresql);
+  const { name } = data;
   const query = `UPDATE public.topic SET name = '${name}' WHERE id = '${id}'`;
 
   try {
@@ -78,9 +81,8 @@ exports.updateExistingTopic = async (data) => {
   }
 };
 
-exports.deleteExistingTopic = async (data) => {
+const deleteTopicDB = async (id) => {
   const sql = new Client(postgresql);
-  const id = data.id;
   const query = `DELETE FROM public.topic WHERE id = '${id}'`;
 
   try {
@@ -93,12 +95,10 @@ exports.deleteExistingTopic = async (data) => {
   }
 };
 
-exports.getTopicInfoForTable = async (data) => {
+const getTopicForTableDB = async (data) => {
   const sql = new Client(postgresql);
   const search = data.search.toLowerCase();
-  const sortCol = data.sortCol;
-  const sortDir = data.sortDir;
-  const row = data.row;
+  const { sortCol, sortDir, row } = data;
   const offSet = row * (data.page - 1);
 
   let query = ` SELECT
@@ -131,13 +131,9 @@ exports.getTopicInfoForTable = async (data) => {
   }
 };
 
-exports.getTotalRowsFortopicTable = async (data) => {
+const getTotalRowsForTopicTableDB = async (data) => {
   const sql = new Client(postgresql);
   const search = data.search.toLowerCase();
-  const sortCol = data.sortCol;
-  const sortDir = data.sortDir;
-  const row = data.row;
-  const offSet = row * (data.page - 1);
 
   let query = ` SELECT
                 COUNT(topic.id) AS totalRows
@@ -155,4 +151,15 @@ exports.getTotalRowsFortopicTable = async (data) => {
   } catch (err) {
     return 0;
   }
+};
+
+module.exports = {
+  createTopicDB,
+  getOneTopicByIdDB,
+  getOneTopicByNameDB,
+  getAllTopicDB,
+  updateTopicDB,
+  deleteTopicDB,
+  getTopicForTableDB,
+  getTotalRowsForTopicTableDB,
 };

@@ -1,12 +1,8 @@
-const {
-  fetchSidebarData,
-  getOneBlogbyIdFromDatabase,
-  getRandomBlogIdFromDatabase,
-} = require("../models/blogModel");
-const { formatSidebarData } = require("../utils/utils");
+const { getSidebarDataDB } = require("../models/blogModel");
+const { formatSidebarData } = require("../utils/formatSidebarData");
 
-exports.getSidebarData = async (req, res) => {
-  const result = await fetchSidebarData(req.query);
+const getSidebarData = async (req, res) => {
+  const result = await getSidebarDataDB(req.query);
 
   if (!result) {
     return res.json({ message: "Internal server error.", success: false });
@@ -20,30 +16,6 @@ exports.getSidebarData = async (req, res) => {
   });
 };
 
-exports.getOneBlogbyId = async (req, res) => {
-  const result = await getOneBlogbyIdFromDatabase(req.query);
-
-  if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
-  }
-
-  res.json({
-    message: "Fetched the blog successfully.",
-    data: result[0],
-    success: true,
-  });
-};
-
-exports.getRandomBlogId = async (req, res) => {
-  const result = await getRandomBlogIdFromDatabase();
-
-  if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
-  }
-
-  res.json({
-    message: "Fetched the blog successfully.",
-    data: result[0],
-    success: true,
-  });
+module.exports = {
+  getSidebarData,
 };

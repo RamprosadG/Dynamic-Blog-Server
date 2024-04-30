@@ -1,97 +1,71 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { privateAccessKey } = require("../config/authKey");
+const { getOneUserByEmailDB, createUserDB } = require("../models/userModel");
+const { USER_SECRET_KEY } = require("../config/config");
 
-const {
-  findOneUserByemail,
-  findOneUserByUserName,
-  registerNewUser,
-} = require("../models/userModel");
+const handleLogin = async (req, res) => {
+  const { email, password } = req.body;
 
-exports.handleLogin = async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const user = await getOneUserByEmailDB(email);
 
-  if (!email || !password) {
+  if (!user) {
     return res.json({
-      message: "Email and password are required.",
+      message: "Your email or password is incorrect.",
       success: false,
     });
   }
-  const user = await findOneUserByemail(email);
 
-  if (!user) {
-    return res.json({ message: "Your email is incorrect.", success: false });
+  const match = await bcrypt.compare(password, user.password);
+
+  if (!match) {
+    return res.json({
+      message: "Your email or password is incorrect.",
+      success: false,
+    });
   }
 
-  bcrypt.compare(password, user.password, async (err, isPasswordMatch) => {
-    if (err) {
-      return res.json({ message: "Error to compare hash.", success: false });
-    }
+  const userInfo = {
+    id: user.id,
+    email: email,
+    userName: user.username,
+  };
 
-    if (!isPasswordMatch) {
-      return res.json({
-        message: "Your password is incorrect.",
-        success: false,
-      });
-    }
+  const userToken = jwt.sign(userInfo, userSecretKey);
 
-    const userInfo = {
-      id: user.id,
-      email: email,
-      userName: user.username,
-    };
-
-    const token = jwt.sign(
-      userInfo,
-      privateAccessKey,
-      {
-        expiresIn: "30d",
-      },
-      (err, token) => {
-        if (err) {
-          return res.json({
-            message: "Error to generate jwt.",
-            success: false,
-          });
-        }
-        res.json({
-          token: "Bearer " + token,
-          message: "You are logged in successfully.",
-          success: true,
-        });
-      }
-    );
+  res.cookie("userToken", userToken);
+  res.json({
+    data: userInfo,
+    message: "You are successfully logged in.",
+    success: true,
   });
 };
 
-exports.handleRegister = async (req, res) => {
-  const userName = req.body.userName;
-  const email = req.body.email;
-  const password = req.body.password;
+const handleLogout = async (req, res) => {
+  res.clearCookie("userToken");
+  res.json({ message: "Logged out successfully", success: true });
+};
 
-  if (!userName || !email || !password) {
-    return res.json({ message: "Every field is required.", success: false });
-  }
-  const userByEmail = await findOneUserByemail(email);
+const handleRegister = async (req, res) => {
+  const { email, password } = req.body;
+
+  const userByEmail = await getOneUserByEmailDB(email);
 
   if (userByEmail) {
     return res.json({ message: "This email already exists.", success: false });
   }
 
-  const userByUserName = await findOneUserByUserName(userName);
-
-  if (userByUserName) {
-    return res.json({
-      message: "This user name already exists.",
-      success: false,
-    });
-  }
   const hashedPassword = await bcrypt.hash(password, 10);
-  const result = await registerNewUser(req.body, hashedPassword);
+  const result = await createUserDB(req.body, hashedPassword);
 
   if (!result) {
     return res.json({ message: "Internal server error.", success: false });
   }
+
   res.json({ message: "You are registered successfully.", success: true });
+};
+
+module.exports = {
+  handleLogin,
+  handleLogout,
+  handleRegister,
 };

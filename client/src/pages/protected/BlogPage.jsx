@@ -22,13 +22,8 @@ const BlogPage = () => {
   }, []);
 
   const setBlogValue = () => {
-    const formData = {
-      id: id,
-    };
     axios
-      .get("http://localhost:5000/admin/getBlog", {
-        params: formData,
-      })
+      .get(`http://localhost:5000/api/admin/blog/single/${id}`)
       .then((response) => {
         setTitle(response.data.data.title);
         setTopic(response.data.data.topic_id);
@@ -57,19 +52,15 @@ const BlogPage = () => {
 
   const handleAddBlog = async (e) => {
     e.preventDefault();
-    const date = new Date();
     try {
       const formData = {
-        topicId: topic,
+        topicId: parseInt(topic),
         title: title,
         description: description,
         userId: 1, //need to update later
-        date: date,
-        status: false,
-        publishDate: date,
       };
       await axios
-        .post("http://localhost:5000/admin/addBlog", formData)
+        .post("http://localhost:5000/api/admin/blog/create", formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -83,13 +74,12 @@ const BlogPage = () => {
     e.preventDefault();
     try {
       const formData = {
-        id: id,
-        topicId: topic,
+        topicId: parseInt(topic),
         title: title,
         description: description,
       };
-      await axios
-        .put("http://localhost:5000/admin/updateBlog", formData)
+      axios
+        .put(`http://localhost:5000/api/admin/blog/update/${id}`, formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");

@@ -21,7 +21,7 @@ const TopicTable = () => {
     fetchData();
   }, [currentPage, paginationTotalRows, sortColumn, sortDirection, searchText]);
 
-  const fetchData = async () => {
+  const fetchData = () => {
     try {
       setLoading(true);
       const formData = {
@@ -31,8 +31,8 @@ const TopicTable = () => {
         sortDir: sortDirection,
         search: searchText,
       };
-      await axios
-        .get("http://localhost:5000/admin/getTopicForTable", {
+      axios
+        .get("http://localhost:5000/api/admin/topic/table", {
           params: formData,
         })
         .then((response) => {
@@ -64,14 +64,9 @@ const TopicTable = () => {
     setSearchText(e.target.value);
   };
 
-  const handleDeleteTopic = async (id) => {
-    const formData = {
-      id: id,
-    };
-    await axios
-      .delete("http://localhost:5000/admin/deleteTopic", {
-        data: formData,
-      })
+  const handleDeleteTopic = (id) => {
+    axios
+      .delete(`http://localhost:5000/api/admin/topic/remove/${id}`)
       .then((response) => {
         alert(response.data.message);
         response.data.success && fetchData();

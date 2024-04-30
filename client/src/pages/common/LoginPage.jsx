@@ -16,12 +16,14 @@ const LoginPage = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       try {
-        axios.post("http://localhost:5000/login", values).then((response) => {
-          // setIsLoggedIn(true);
-          // setUserInfo(response.data.data);
-          response.data.success && navigate("/");
-          alert(response.data.message);
-        });
+        axios
+          .post("http://localhost:5000/api/login", values)
+          .then((response) => {
+            // setIsLoggedIn(true);
+            // setUserInfo(response.data.data);
+            response.data.success && navigate("/");
+            alert(response.data.message);
+          });
       } catch (error) {
         console.log("There is an error", error);
       }

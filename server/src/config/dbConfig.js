@@ -1,11 +1,17 @@
-require('dotenv').config();
+const {
+  USER_NAME,
+  HOST,
+  DATABASE,
+  PASSWORD,
+  DATABASE_PORT,
+} = require("./config");
 
 const postgresql = {
-    user: process.env.USER_NAME,
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    port: process.env.DATABASE_PORT
-  };
+  user: USER_NAME,
+  host: HOST,
+  database: DATABASE,
+  password: PASSWORD,
+  port: DATABASE_PORT,
+};
 
-  module.exports =  postgresql;
+module.exports = postgresql;
