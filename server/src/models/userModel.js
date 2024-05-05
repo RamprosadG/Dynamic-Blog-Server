@@ -1,5 +1,5 @@
 const { Client } = require("pg");
-const postgresql = require("../config/dbConfig");
+const postgresql = require("../configs/dbConfig");
 
 const createUserDB = async (data, hashedPassword) => {
   const { username, email } = data;

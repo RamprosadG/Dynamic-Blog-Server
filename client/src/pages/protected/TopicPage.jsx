@@ -7,12 +7,10 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 const TopicPage = () => {
   const [topicName, setTopicName] = useState("");
   const navigate = useNavigate();
-  const { option } = useParams();
-  const location = useLocation();
-  const id = location.state.id;
+  const { id } = useParams();
 
   useEffect(() => {
-    if (option == "Update") {
+    if (id) {
       setTopicValue();
     }
   }, []);
@@ -30,10 +28,6 @@ const TopicPage = () => {
 
   const handleTopicName = (event) => {
     setTopicName(event.target.value);
-  };
-
-  const handleReset = () => {
-    setTopicName("");
   };
 
   const handleRedirectToAdminPage = () => {
@@ -95,17 +89,9 @@ const TopicPage = () => {
             <div className="d-flex justify-content-end mt-4">
               <Button
                 variant="outline-secondary"
-                className="mr-2"
-                onClick={handleReset}
+                onClick={!id ? handleAddTopic : handleUpdateTopic}
               >
-                Reset
-              </Button>
-              <Button
-                variant="outline-secondary"
-                className="ms-2"
-                onClick={option === "Add" ? handleAddTopic : handleUpdateTopic}
-              >
-                {option} topic
+                {id ? "Update" : "Add"} topic
               </Button>
             </div>
 

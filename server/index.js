@@ -1,4 +1,4 @@
-const { SERVER_PORT } = require("./src/config/config");
+const { SERVER_PORT } = require("./src/configs/config");
 const app = require("./app");
 const PORT = SERVER_PORT || 5000;
 

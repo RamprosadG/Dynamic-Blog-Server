@@ -1,5 +1,5 @@
 const { Client } = require("pg");
-const postgresql = require("../config/dbConfig");
+const postgresql = require("../configs/dbConfig");
 
 const createBlogDB = async (data) => {
   const sql = new Client(postgresql);
@@ -48,11 +48,11 @@ const getOneBlogByTitleDB = async (title) => {
     await sql.connect();
     const result = await sql.query(query);
     await sql.end();
-    if (!result.rows.length) {
+
+    if (!result || !result.rows.length) {
       return false;
     }
-    const blogTitle = result.rows[0].title;
-    return blogTitle;
+    return result.rows[0];
   } catch (err) {
     return false;
   }
@@ -65,11 +65,7 @@ const getAllBlogDB = async () => {
     await sql.connect();
     const result = await sql.query(query);
     await sql.end();
-
-    if (!result || !result.rows.length) {
-      return false;
-    }
-    return data.rows;
+    return result.rows;
   } catch (err) {
     return false;
   }
@@ -108,7 +104,7 @@ const getBlogForTableDB = async (data) => {
   const sql = new Client(postgresql);
   const search = data.search?.toLowerCase();
   const { sortCol, sortDir, topic, startDate, endDate, status, row } = data;
-  const offSet = row * (data.page - 1);
+  const offSet = row * (data?.page - 1);
 
   let query = ` SELECT
                 blog.id AS id,

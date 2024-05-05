@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-import { Form } from "react-bootstrap";
+import { Col, Form, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -96,7 +96,7 @@ const TopicTable = () => {
         return (
           <div className="container ms-2">
             <div className="d-flex justify-content-start">
-              <Link to="/topic/Update" state={{ id: row.id }}>
+              <Link to={`/topic/${row.id}`}>
                 <button type="button" className="btn btn-secondary, btn-sm">
                   <FontAwesomeIcon icon={faPenToSquare} />
                 </button>
@@ -119,8 +119,8 @@ const TopicTable = () => {
 
   return (
     <>
-      <div className="row mt-5 mb-2">
-        <div className="col-3">
+      <Row className="mt-5 mb-2">
+        <Col xs={6} sm={3}>
           <Form.Control
             type="search"
             placeholder="Search"
@@ -129,8 +129,8 @@ const TopicTable = () => {
             className="me-2"
             aria-label="Search"
           />
-        </div>
-      </div>
+        </Col>
+      </Row>
       <DataTable
         id="topic-table"
         striped={true}
