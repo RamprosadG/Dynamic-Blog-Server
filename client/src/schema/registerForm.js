@@ -1,17 +1,14 @@
 import * as yup from "yup";
 
 export const registerSchema = yup.object().shape({
-  username: yup.string().required("Username is required."),
-  email: yup
-    .string()
-    .required("Email is required.")
-    .email("Invalid email address."),
+  username: yup.string().required("Required"),
+  email: yup.string().required("Required").email("Invalid email"),
   password: yup
     .string()
-    .required("Password is required.")
-    .min(8, "Password must be at least 8 characters.")
+    .required("Required")
+    .min(8, "Password must be at least 8 characters")
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      /^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d!]{8,}$/,
+      "Password must contain at least one number and one letter"
     ),
 });

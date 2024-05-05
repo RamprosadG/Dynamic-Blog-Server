@@ -52,3 +52,12 @@
   font-size: 18px;
   border: 1px solid black;
 }
+
+.error-message {
+  color: red;
+  font-size: 14px;
+}
+
+.table-button-generate {
+  margin-top: 32px;
+}

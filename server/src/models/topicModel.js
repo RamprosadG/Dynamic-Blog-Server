@@ -1,5 +1,5 @@
 const { Client } = require("pg");
-const postgresql = require("../config/dbConfig");
+const postgresql = require("../configs/dbConfig");
 
 const createTopicDB = async (data) => {
   const sql = new Client(postgresql);
@@ -18,7 +18,7 @@ const createTopicDB = async (data) => {
 
 const getOneTopicByNameDB = async (name) => {
   const sql = new Client(postgresql);
-  const query = `SELECT * FROM public.topic WHERE id = '${name}' LIMIT 1`;
+  const query = `SELECT * FROM public.topic WHERE id = '${name}'`;
 
   try {
     await sql.connect();
@@ -36,7 +36,7 @@ const getOneTopicByNameDB = async (name) => {
 
 const getOneTopicByIdDB = async (id) => {
   const sql = new Client(postgresql);
-  const query = `SELECT * FROM public.topic WHERE id = '${id}' LIMIT 1`;
+  const query = `SELECT * FROM public.topic WHERE id = '${id}'`;
 
   try {
     await sql.connect();

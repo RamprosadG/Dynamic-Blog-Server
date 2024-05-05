@@ -13,31 +13,31 @@ const createTopic = async (req, res) => {
   const { name } = req.body;
 
   if (!name) {
-    return res.json({ message: "The name is required.", success: false });
+    return res.json({ message: "Name is required.", success: false });
   }
   const topic = await getOneTopicByNameDB(name);
 
   if (topic) {
-    return res.json({ message: "The topic already exists.", success: false });
+    return res.json({ message: "Topic already exists.", success: false });
   }
   const result = await createTopicDB(req.body);
 
   if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
+    return res.json({ message: "Something went wrong.", success: false });
   }
-  res.json({ message: "The topic is added successfully.", success: true });
+  res.json({ message: "Topic is created successfully.", success: true });
 };
 
 const getOneTopicById = async (req, res) => {
   const id = req?.params?.id;
 
   if (!id) {
-    return res.json({ message: "The id is required.", success: false });
+    return res.json({ message: "Id is required.", success: false });
   }
   const result = await getOneTopicByIdDB(id);
 
   if (!result) {
-    return res.json({ message: "Internal server error", success: false });
+    return res.json({ message: "Something went wrong.", success: false });
   }
 
   res.json({
@@ -50,11 +50,11 @@ const getAllTopic = async (req, res) => {
   const result = await getAllTopicDB();
 
   if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
+    return res.json({ message: "Something went wrong.", success: false });
   }
 
   res.json({
-    message: "All topic are fetched successfully.",
+    message: "All topic are found successfully.",
     data: result,
     success: true,
   });
@@ -64,12 +64,12 @@ const updateTopic = async (req, res) => {
   const id = req?.params?.id;
 
   if (!id) {
-    return res.json({ message: "The id is required.", success: false });
+    return res.json({ message: "Id is required.", success: false });
   }
   const result = await updateTopicDB(id, req.body);
 
   if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
+    return res.json({ message: "Something went wrong.", success: false });
   }
   res.json({ message: "Topic is updated successfully.", success: true });
 };
@@ -78,14 +78,14 @@ const deleteTopic = async (req, res) => {
   const id = req?.params?.id;
 
   if (!id) {
-    return res.json({ message: "The id is required.", success: false });
+    return res.json({ message: "Id is required.", success: false });
   }
   const result = await deleteTopicDB(id);
 
   if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
+    return res.json({ message: "Something went wrong.", success: false });
   }
-  res.json({ message: "The topic is deleted successfully.", success: true });
+  res.json({ message: "Topic is deleted successfully.", success: true });
 };
 
 const getTopicForTable = async (req, res) => {

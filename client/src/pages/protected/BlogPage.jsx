@@ -11,12 +11,10 @@ const BlogPage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
-  const { option } = useParams();
-  const location = useLocation();
-  const id = location.state.id;
+  const { id } = useParams();
 
   useEffect(() => {
-    if (option == "Update") {
+    if (id) {
       setBlogValue();
     }
   }, []);
@@ -121,9 +119,9 @@ const BlogPage = () => {
                 <Button
                   variant="outline-secondary"
                   className="ms-2"
-                  onClick={option === "Add" ? handleAddBlog : handleUpdateBlog}
+                  onClick={!id ? handleAddBlog : handleUpdateBlog}
                 >
-                  {option} blog
+                  {id ? "Update" : "Add"} blog
                 </Button>
               </Col>
             </Row>
