@@ -7,6 +7,7 @@ import { registerSchema } from "../../schema/registerForm";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -20,11 +21,15 @@ const RegisterPage = () => {
         axios
           .post("http://localhost:5000/api/register", values)
           .then((response) => {
-            console.log(response);
-            response.data.success && navigate(`/verify/${response.data.data}`);
+            if (response.data.success) {
+              navigate(`/verify/${response.data.data}`);
+              setErrorMessage("");
+            } else {
+              setErrorMessage(response.data.message);
+            }
           });
       } catch (error) {
-        console.log("There is an error", error);
+        console.log("Error in register: ", error);
       }
     },
   });
@@ -42,6 +47,9 @@ const RegisterPage = () => {
               <Card.Title className="text-center mb-5">
                 <h2>Register</h2>
               </Card.Title>
+              {errorMessage && (
+                <div className="error-message mb-2">{errorMessage}</div>
+              )}
               <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="mb-4">
                   <Form.Control

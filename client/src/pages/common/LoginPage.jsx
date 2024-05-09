@@ -7,6 +7,7 @@ import { loginSchema } from "../../schema/loginForm";
 import AuthContext from "../../context/authContext";
 
 const LoginPage = () => {
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { setIsLoggedIn, setUserInfo } = useContext(AuthContext);
 
@@ -21,14 +22,17 @@ const LoginPage = () => {
         axios
           .post("http://localhost:5000/api/login", values)
           .then((response) => {
-            setIsLoggedIn(true);
-            setUserInfo(response.data.data);
-            response.data.success && navigate("/");
-            alert(response.data.message);
-            console.log(response.data.data);
+            if (response.data.success) {
+              setErrorMessage("");
+              setIsLoggedIn(true);
+              setUserInfo(response.data.data);
+              navigate("/");
+            } else {
+              setErrorMessage(response.data.message);
+            }
           });
       } catch (error) {
-        console.log("There is an error", error);
+        console.log("Error in login: ", error);
       }
     },
   });
@@ -51,7 +55,9 @@ const LoginPage = () => {
               <Card.Title className="text-center mb-5">
                 <h2>Login</h2>
               </Card.Title>
-
+              {errorMessage && (
+                <div className="error-message mb-2">{errorMessage}</div>
+              )}
               <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="mb-4">
                   <Form.Control
@@ -98,7 +104,7 @@ const LoginPage = () => {
                 </Form.Group>
                 <Form.Group className="d-flex justify-content-center mt-4">
                   <Button variant="link" onClick={handleNavigateRegisterPage}>
-                    Create an account
+                    Don't have an account? Register
                   </Button>
                 </Form.Group>
               </Form>
