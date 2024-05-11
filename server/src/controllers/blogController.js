@@ -7,26 +7,31 @@ const {
   deleteBlogDB,
   getBlogForTableDB,
   getTotalRowsForBlogTableDB,
-} = require("../models/blogModel");
+} = require("../services/blogService");
 
 const createBlog = async (req, res) => {
-  const { title } = req.body;
+  try {
+    const { title } = req.body;
 
-  if (!title) {
-    return res.json({ message: "Title is required.", success: false });
+    if (!title) {
+      return res.json({ message: "Title is required.", success: false });
+    }
+    const blog = await getOneBlogByTitleDB(title);
+
+    if (blog) {
+      return res.json({ message: "Title already exists.", success: false });
+    }
+
+    const result = await createBlogDB(req.body);
+
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+    res.json({ message: "Blog is created successfully.", success: true });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
   }
-  const blog = await getOneBlogByTitleDB(title);
-
-  if (blog) {
-    return res.json({ message: "Title already exists.", success: false });
-  }
-
-  const result = await createBlogDB(req.body);
-
-  if (!result) {
-    return res.json({ message: "Something went wrong.", success: false });
-  }
-  res.json({ message: "Blog is created successfully.", success: true });
 };
 
 const getOneBlogById = async (req, res) => {
