@@ -8,6 +8,7 @@ const {
 const { USER_SECRET_KEY, SMTP_SECRET_KEY } = require("../configs/config");
 const sendNewsLetter = require("../utils/newsLetter");
 const getVerificationCode = require("../utils/generateVerificationCode");
+const { faDownLong } = require("@fortawesome/free-solid-svg-icons");
 
 const handleLogin = async (req, res) => {
   try {
@@ -111,15 +112,19 @@ const handleRegister = async (req, res) => {
 
 const verifyRegister = async (req, res) => {
   try {
-    const token = req?.params?.token;
+    const token = req.params.token;
+    console.log(req.params);
+    console.log(token);
 
     if (!token) {
       return res.json({ message: "Token is requited.", success: false });
     }
 
     const { verificationCode } = req.body;
+    console.log(verificationCode);
 
     const decode = jwt.verify(token, SMTP_SECRET_KEY);
+    console.log(decode);
 
     if (!decode) {
       return res.json({ message: "Invalid token.", success: false });
@@ -138,6 +143,7 @@ const verifyRegister = async (req, res) => {
       email: decode.email,
       password: hashedPassword,
     };
+    console.log(userData);
     const result = await createUserDB(userData);
 
     if (!result) {

@@ -1,23 +1,25 @@
 import React from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useFormik } from "formik";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { codeSchema } from "../../schema/verifyEmailForm";
+import { verificationCodeSchema } from "../../schema/verifyEmailForm";
 
 const EmailVerificationPage = () => {
-  const { token } = useParams;
+  const navigate = useNavigate();
+  const { token } = useParams();
+  console.log(token);
   const formik = useFormik({
     initialValues: {
-      code: null,
+      verificationCode: null,
     },
-    validationSchema: codeSchema,
+    validationSchema: verificationCodeSchema,
     onSubmit: (values) => {
       try {
         axios
           .post(`http://localhost:5000/api/verify/${token}`, values)
           .then((response) => {
-            console.log(response.data);
+            response.data.success && navigate("/");
           });
       } catch (error) {
         console.log("There is an error", error);
@@ -32,21 +34,24 @@ const EmailVerificationPage = () => {
           <Card className="my-3">
             <Card.Body>
               <div className="mb-4">
-                A verification code is sent to your email. Please check your
-                email and enter the code.
+                <h4>
+                  A verification code is sent to your email. Please check your
+                  email and enter the code.
+                </h4>
               </div>
               <Form onSubmit={formik.handleSubmit}>
                 <Form.Group>
                   <Form.Control
                     id="verificationCode"
-                    name="code"
+                    name="verificationCode"
                     type="number"
-                    placeholder="Enter code"
+                    placeholder="Enter verification code"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.code}
+                    value={formik.values.verificationCode}
                   />
-                  {formik.touched.code && formik.errors.code ? (
+                  {formik.touched.verificationCode &&
+                  formik.errors.verificationCode ? (
                     <div className="error-message">{formik.errors.code}</div>
                   ) : null}
                 </Form.Group>

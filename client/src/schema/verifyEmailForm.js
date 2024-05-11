@@ -1,5 +1,5 @@
 import * as yup from "yup";
 
-export const codeSchema = yup.object().shape({
-  code: yup.number().required("Required"),
+export const verificationCodeSchema = yup.object().shape({
+  verificationCode: yup.number().required("Required"),
 });

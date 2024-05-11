@@ -22,7 +22,7 @@ const RegisterPage = () => {
           .post("http://localhost:5000/api/register", values)
           .then((response) => {
             if (response.data.success) {
-              navigate(`/verify/${response.data.data}`);
+              navigate(`/verify/${response.data.token}`);
               setErrorMessage("");
             } else {
               setErrorMessage(response.data.message);
