@@ -24,7 +24,7 @@ const getOneBlogByIdDB = async (id) => {
 
 const getOneBlogByTitleDB = async (title) => {
   try {
-    const res = await DB.topic.findUnique({ where: { title } });
+    const res = await DB.blog.findUnique({ where: { title } });
     return res;
   } catch (err) {
     console.log(err);
@@ -140,7 +140,7 @@ const getTotalRowsForBlogTableDB = async (data) => {
   try {
     const { search, topic, startDate, endDate, status } = data;
 
-    const result = await prisma.blog.count({
+    const result = await DB.blog.count({
       where: {
         AND: [
           search && {
@@ -182,10 +182,10 @@ const getSidebarDataDB = async (data) => {
   try {
     const { search } = data;
 
-    const result = await prisma.blog.findMany({
+    const result = await DB.blog.findMany({
       where: {
         title: {
-          contains: search ? search.toLowerCase() : undefined,
+          contains: search ? search.toLowerCase() : "",
           mode: "insensitive",
         },
       },
@@ -196,6 +196,7 @@ const getSidebarDataDB = async (data) => {
       },
     });
 
+    console.log(result);
     return result;
   } catch (err) {
     console.error(err);

@@ -8,7 +8,7 @@ import { Form } from "react-bootstrap";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);
-  const [lastSelectedItem, setLastSelectedItem] = useState(null);
+  const [lastSelectedItem, setLastSelectedItem] = useState("");
   const [blogData, setBlogData] = useState(null);
   const [searchText, setSearchText] = useState("");
 
@@ -52,7 +52,12 @@ const HomePage = () => {
   };
 
   const handleItemSelectionToggle = (event, itemId, isSelected) => {
-    if (isSelected && !isNaN(itemId)) {
+    const guid = new RegExp(
+      /^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$/
+    );
+
+    if (isSelected && guid.test(itemId)) {
+      console.log(itemId);
       setLastSelectedItem(itemId);
     }
   };
