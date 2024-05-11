@@ -2,10 +2,10 @@ const formatSidebarData = async (data) => {
   const dictionary = {};
 
   data?.map((item) => {
-    if (!dictionary[item.topic]) {
-      dictionary[item.topic] = [];
+    if (!dictionary[item.topic?.name]) {
+      dictionary[item.topic?.name] = [];
     }
-    dictionary[item.topic].push({ id: item.id, label: item.blog });
+    dictionary[item.topic?.name].push({ id: item.id, label: item.title });
   });
   const keys = Object.keys(dictionary);
   const formattedData = [];
