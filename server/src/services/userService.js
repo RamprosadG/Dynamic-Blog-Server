@@ -2,7 +2,7 @@ const DB = require("../configs/dbConfig");
 
 const createUserDB = async (data) => {
   try {
-    const res = await DB.blog.create({
+    const res = await DB.user.create({
       data,
     });
     return true;
@@ -14,7 +14,17 @@ const createUserDB = async (data) => {
 
 const getOneUserByEmailDB = async (email) => {
   try {
-    const res = await DB.blog.findUnique({ where: { email } });
+    const res = await DB.user.findUnique({ where: { email } });
+    return res;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const getOneUserByUsernameDB = async (username) => {
+  try {
+    const res = await DB.user.findUnique({ where: { username } });
     return res;
   } catch (err) {
     console.log(err);
@@ -25,4 +35,5 @@ const getOneUserByEmailDB = async (email) => {
 module.exports = {
   createUserDB,
   getOneUserByEmailDB,
+  getOneUserByUsernameDB,
 };

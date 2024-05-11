@@ -16,7 +16,7 @@ enum roleType {
 
 model User {
   id        String   @id             @default(uuid())
-  username  String   @db.VarChar
+  username  String   @unique         @db.VarChar
   email     String   @unique         @db.VarChar
   password  String   @db.VarChar
   role      roleType @default(user)

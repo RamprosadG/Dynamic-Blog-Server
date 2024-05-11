@@ -3,9 +3,11 @@ const jwt = require("jsonwebtoken");
 const {
   createUserDB,
   getOneUserByEmailDB,
+  getOneUserByUsernameDB,
 } = require("../services/userService");
 const { USER_SECRET_KEY, SMTP_SECRET_KEY } = require("../configs/config");
 const sendNewsLetter = require("../utils/newsLetter");
+const getVerificationCode = require("../utils/generateVerificationCode");
 
 const handleLogin = async (req, res) => {
   try {
@@ -62,29 +64,32 @@ const handleRegister = async (req, res) => {
   try {
     const { email, password, username } = req.body;
 
-    const user = await getOneUserByEmailDB(email);
+    const userByUsername = await getOneUserByUsernameDB(username);
 
-    if (user) {
+    if (userByUsername) {
+      return res.json({ message: "Username already exists.", success: false });
+    }
+    const userByEmail = await getOneUserByEmailDB(email);
+
+    if (userByEmail) {
       return res.json({ message: "Email already exists.", success: false });
     }
 
-    const min = 100000;
-    const max = 999999;
-    const code = Math.floor(Math.random() * (max - min + 1)) + min;
+    const verificationCode = getVerificationCode();
 
     const tokenData = {
       email: email,
       username: username,
       password: password,
-      code: code,
+      verificationCode: verificationCode,
     };
 
-    const token = jwt.sign(tokenData, SMTP_SECRET_KEY, { expiresIn: "30m" });
+    const token = jwt.sign(tokenData, SMTP_SECRET_KEY, { expiresIn: "1h" });
 
     const newsLetterData = {
       email: email,
       subject: "Email verification",
-      message: `<p>Your varification code is: ${code}</p>`,
+      message: `<p>Your varification code is: ${verificationCode}</p>`,
     };
 
     const result = await sendNewsLetter(newsLetterData);
@@ -112,18 +117,18 @@ const verifyRegister = async (req, res) => {
       return res.json({ message: "Token is requited.", success: false });
     }
 
-    const { code } = req.body;
+    const { verificationCode } = req.body;
 
     const decode = jwt.verify(token, SMTP_SECRET_KEY);
-    console.log("Error in decode: " + decode);
 
     if (!decode) {
       return res.json({ message: "Invalid token.", success: false });
     }
 
     const { password } = decode;
+    console.log(decode, verificationCode);
 
-    if (decode.code !== code) {
+    if (decode.verificationCode !== verificationCode) {
       return res.json({ message: "Wrong code.", success: false });
     }
 
