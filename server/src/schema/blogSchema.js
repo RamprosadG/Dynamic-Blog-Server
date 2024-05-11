@@ -4,8 +4,8 @@ const createBlogSchema = z.object({
   body: z.object({
     title: z.string(),
     description: z.string(),
-    userId: z.number(),
-    topicId: z.number(),
+    userId: z.string(),
+    topicId: z.string(),
   }),
 });
 
@@ -13,7 +13,7 @@ const updateBlogSchema = z.object({
   body: z.object({
     title: z.string(),
     description: z.string(),
-    topicId: z.number(),
+    topicId: z.string(),
   }),
 });
 

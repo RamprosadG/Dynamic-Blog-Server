@@ -1,45 +1,56 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { createUserDB, getOneUserByEmailDB } = require("../models/userModel");
+const {
+  createUserDB,
+  getOneUserByEmailDB,
+} = require("../services/userService");
 const { USER_SECRET_KEY, SMTP_SECRET_KEY } = require("../configs/config");
 const sendNewsLetter = require("../utils/newsLetter");
 
 const handleLogin = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await getOneUserByEmailDB(email);
+    const user = await getOneUserByEmailDB(email);
 
-  if (!user) {
-    return res.json({
-      message: "Invalid email or password.",
+    if (!user) {
+      return res.json({
+        message: "Invalid email or password.",
+        success: false,
+      });
+    }
+
+    const matchPassword = await bcrypt.compare(password, user.password);
+
+    if (!matchPassword) {
+      return res.json({
+        message: "Invalid email or password.",
+        success: false,
+      });
+    }
+
+    const userInfo = {
+      id: user.id,
+      email: email,
+      username: user.username,
+      role: user.role,
+    };
+
+    const userToken = jwt.sign(userInfo, USER_SECRET_KEY);
+
+    res.cookie("userToken", userToken);
+    res.json({
+      data: userInfo,
+      message: "Logged in successfully.",
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
+      message: "Something went wrong.",
       success: false,
     });
   }
-
-  const matchPassword = await bcrypt.compare(password, user.password);
-
-  if (!matchPassword) {
-    return res.json({
-      message: "Invalid email or password.",
-      success: false,
-    });
-  }
-
-  const userInfo = {
-    id: user.id,
-    email: email,
-    username: user.username,
-    role: user.role,
-  };
-
-  const userToken = jwt.sign(userInfo, USER_SECRET_KEY);
-
-  res.cookie("userToken", userToken);
-  res.json({
-    data: userInfo,
-    message: "Logged in successfully.",
-    success: true,
-  });
 };
 
 const handleLogout = async (req, res) => {
@@ -48,44 +59,49 @@ const handleLogout = async (req, res) => {
 };
 
 const handleRegister = async (req, res) => {
-  const { email, password, username } = req.body;
+  try {
+    const { email, password, username } = req.body;
 
-  const user = await getOneUserByEmailDB(email);
+    const user = await getOneUserByEmailDB(email);
 
-  if (user) {
-    return res.json({ message: "Email already exists.", success: false });
+    if (user) {
+      return res.json({ message: "Email already exists.", success: false });
+    }
+
+    const min = 100000;
+    const max = 999999;
+    const code = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    const tokenData = {
+      email: email,
+      username: username,
+      password: password,
+      code: code,
+    };
+
+    const token = jwt.sign(tokenData, SMTP_SECRET_KEY, { expiresIn: "30m" });
+
+    const newsLetterData = {
+      email: email,
+      subject: "Email verification",
+      message: `<p>Your varification code is: ${code}</p>`,
+    };
+
+    const result = await sendNewsLetter(newsLetterData);
+
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+
+    res.json({
+      message: "Email sent successfully.",
+      token: token,
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
   }
-
-  const min = 100000;
-  const max = 999999;
-  const code = Math.floor(Math.random() * (max - min + 1)) + min;
-
-  const tokenData = {
-    email: email,
-    username: username,
-    password: password,
-    code: code,
-  };
-
-  const token = jwt.sign(tokenData, SMTP_SECRET_KEY, { expiresIn: "30m" });
-
-  const newsLetterData = {
-    email: email,
-    subject: "Email verification",
-    message: `<p>Your varification code is: ${code}</p>`,
-  };
-
-  const result = await sendNewsLetter(newsLetterData);
-
-  if (!result) {
-    return res.json({ message: "Something went wrong.", success: false });
-  }
-
-  res.json({
-    message: "Email sent successfully.",
-    token: token,
-    success: true,
-  });
 };
 
 const verifyRegister = async (req, res) => {
@@ -112,7 +128,12 @@ const verifyRegister = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const result = await createUserDB(decode, hashedPassword);
+    const userData = {
+      username: decode.username,
+      email: decode.email,
+      password: hashedPassword,
+    };
+    const result = await createUserDB(userData);
 
     if (!result) {
       return res.json({ message: "Something went wrong.", success: false });
