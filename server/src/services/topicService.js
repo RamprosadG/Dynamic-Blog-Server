@@ -71,6 +71,13 @@ const getTopicForTableDB = async (data) => {
     const row = parseInt(data.row);
     const page = parseInt(data.page);
     const offSet = parseInt(row * (page - 1));
+    let orderCondition = undefined;
+
+    if (sortCol === "name") {
+      orderCondition = { [sortCol]: sortDir };
+    } else if (sortCol) {
+      orderCondition = { blogs: { _count: sortDir } };
+    }
 
     const result = await DB.topic.findMany({
       where: {
@@ -92,12 +99,10 @@ const getTopicForTableDB = async (data) => {
           },
         },
       },
-      orderBy:
-        sortCol === "name" ? { name: sortDir } : { blogs: { _count: sortDir } },
+      orderBy: orderCondition,
       take: row,
       skip: offSet,
     });
-    console.log(result);
 
     const topicTableData = result?.map((item) => ({
       id: item.id,

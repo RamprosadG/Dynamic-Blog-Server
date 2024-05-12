@@ -72,6 +72,15 @@ const getBlogForTableDB = async (data) => {
     const row = parseInt(data.row);
     const page = parseInt(data.page);
     const offSet = parseInt(row * (page - 1));
+    let orderCondition = undefined;
+
+    if (sortCol === "name") {
+      orderCondition = { topic: { [sortCol]: sortDir } };
+    } else if (sortCol === "username") {
+      orderCondition = { user: { [sortCol]: sortDir } };
+    } else if (sortCol) {
+      orderCondition = { [sortCol]: sortDir };
+    }
 
     const result = await DB.blog.findMany({
       where: {
@@ -117,7 +126,7 @@ const getBlogForTableDB = async (data) => {
         user: { select: { username: true } },
         topic: { select: { name: true } },
       },
-      orderBy: sortCol ? { [sortCol]: sortDir } : undefined,
+      orderBy: orderCondition,
       take: row,
       skip: offSet,
     });
