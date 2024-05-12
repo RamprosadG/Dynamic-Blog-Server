@@ -122,7 +122,7 @@ const getBlogForTableDB = async (data) => {
       skip: offSet,
     });
 
-    const tableData = result?.map((item) => ({
+    const blogTableData = result?.map((item) => ({
       id: item.id,
       title: item.title,
       author: item.user.username,
@@ -132,7 +132,7 @@ const getBlogForTableDB = async (data) => {
       status: item.status ? "Published" : "Not published",
     }));
 
-    return tableData;
+    return blogTableData;
   } catch (err) {
     console.error(err);
     return false;
@@ -179,7 +179,6 @@ const getTotalRowsForBlogTableDB = async (data) => {
         ].filter(Boolean),
       },
     });
-    console.log(result);
 
     return result;
   } catch (err) {

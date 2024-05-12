@@ -67,24 +67,25 @@ const deleteTopicDB = async (id) => {
 
 const getTopicForTableDB = async (data) => {
   try {
-    const { search, sortCol, sortDir, row, page } = data;
-    const offSet = row * (page - 1);
+    const { search, sortCol, sortDir } = data;
+    const row = parseInt(data.row);
+    const page = parseInt(data.page);
+    const offSet = parseInt(row * (page - 1));
 
     const result = await DB.topic.findMany({
       where: {
-        name: {
-          contains: search.toLowerCase(),
-          mode: "insensitive",
-        },
+        AND: [
+          search && {
+            name: {
+              contains: search.toLowerCase(),
+              mode: "insensitive",
+            },
+          },
+        ].filter(Boolean),
       },
       select: {
         id: true,
         name: true,
-        blogs: {
-          select: {
-            id: true,
-          },
-        },
         _count: {
           select: {
             blogs: true,
@@ -96,8 +97,15 @@ const getTopicForTableDB = async (data) => {
       take: row,
       skip: offSet,
     });
+    console.log(result);
 
-    return result;
+    const topicTableData = result?.map((item) => ({
+      id: item.id,
+      name: item.name,
+      numberOfBlog: item._count.blogs,
+    }));
+    console.log(topicTableData);
+    return topicTableData;
   } catch (err) {
     console.error(err);
     return false;

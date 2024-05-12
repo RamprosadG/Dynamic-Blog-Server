@@ -35,64 +35,84 @@ const createBlog = async (req, res) => {
 };
 
 const getOneBlogById = async (req, res) => {
-  const id = req?.params?.id;
+  try {
+    const id = req?.params?.id;
 
-  if (!id) {
-    return res.json({ message: "Id is required.", success: false });
+    if (!id) {
+      return res.json({ message: "Id is required.", success: false });
+    }
+    const result = await getOneBlogByIdDB(id);
+
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+
+    res.json({
+      message: "Blog is found successfully.",
+      data: result,
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
   }
-  const result = await getOneBlogByIdDB(id);
-
-  if (!result) {
-    return res.json({ message: "Something went wrong.", success: false });
-  }
-
-  res.json({
-    message: "Blog is found successfully.",
-    data: result,
-    success: true,
-  });
 };
 
 const getAllBlog = async (req, res) => {
-  const result = await getAllBlogDB();
+  try {
+    const result = await getAllBlogDB();
 
-  if (!result) {
-    return res.json({ message: "Something went wrong.", success: false });
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+
+    res.json({
+      message: "All blogs are found successfully.",
+      data: result,
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
   }
-
-  res.json({
-    message: "All blogs are found successfully.",
-    data: result,
-    success: true,
-  });
 };
 
 const updateBlog = async (req, res) => {
-  const id = req?.params?.id;
+  try {
+    const id = req?.params?.id;
 
-  if (!id) {
-    return res.json({ message: "Id is required.", success: false });
-  }
-  const result = updateBlogDB(id, req.body);
+    if (!id) {
+      return res.json({ message: "Id is required.", success: false });
+    }
+    const result = updateBlogDB(id, req.body);
 
-  if (!result) {
-    return res.json({ message: "Something went wrong.", success: false });
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+    res.json({ message: "Blog is updated successfully.", success: true });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
   }
-  res.json({ message: "Blog is updated successfully.", success: true });
 };
 
 const deleteBlog = async (req, res) => {
-  const id = req?.params?.id;
+  try {
+    const id = req?.params?.id;
 
-  if (!id) {
-    return res.json({ message: "Id is required.", success: false });
-  }
-  const result = await deleteBlogDB(id);
+    if (!id) {
+      return res.json({ message: "Id is required.", success: false });
+    }
+    const result = await deleteBlogDB(id);
 
-  if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
+    if (!result) {
+      return res.json({ message: "Internal server error.", success: false });
+    }
+    res.json({ message: "The blog is deleted successfully.", success: true });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
   }
-  res.json({ message: "The blog is deleted successfully.", success: true });
 };
 
 const getBlogForTable = async (req, res) => {
