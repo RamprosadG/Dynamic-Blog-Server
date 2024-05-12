@@ -1,10 +1,11 @@
 import { Button, Col, Row } from "react-bootstrap";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Card, Form } from "react-bootstrap";
 import axios from "axios";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import TopicDropdown from "../../components/Dropdown/TopicDropdown";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import AuthContext from "../../context/authContext";
 
 const BlogPage = () => {
   const [topic, setTopic] = useState("");
@@ -12,6 +13,7 @@ const BlogPage = () => {
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
+  const { userInfo } = useContext(AuthContext);
 
   useEffect(() => {
     if (id) {
@@ -52,10 +54,10 @@ const BlogPage = () => {
     e.preventDefault();
     try {
       const formData = {
-        topicId: parseInt(topic),
+        topicId: topic,
         title: title,
         description: description,
-        userId: 1, //need to update later
+        userId: userInfo.id,
       };
       await axios
         .post("http://localhost:5000/api/admin/blog/create", formData)
@@ -72,7 +74,7 @@ const BlogPage = () => {
     e.preventDefault();
     try {
       const formData = {
-        topicId: parseInt(topic),
+        topicId: topic,
         title: title,
         description: description,
       };
