@@ -36,7 +36,7 @@ const TopicDropdown = ({ value, updateTopic }) => {
       <option id="option" key={"option"} value={""}>
         Select topic
       </option>
-      {options.map((option) => (
+      {options?.map((option) => (
         <option key={option.id} value={option.id}>
           {option.name}
         </option>

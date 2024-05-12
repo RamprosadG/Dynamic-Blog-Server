@@ -26,7 +26,7 @@ const BlogPage = () => {
       .get(`http://localhost:5000/api/admin/blog/single/${id}`)
       .then((response) => {
         setTitle(response.data.data.title);
-        setTopic(response.data.data.topic_id);
+        setTopic(response.data.data.topicId);
         setDescription(response.data.data.description);
       })
       .catch(() => {
