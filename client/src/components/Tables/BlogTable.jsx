@@ -117,19 +117,19 @@ const BlogTable = () => {
     },
     {
       name: "Topic",
-      sortField: "topic",
+      sortField: "name",
       selector: (row) => row.topic,
       sortable: true,
     },
     {
       name: "Author",
-      sortField: "author",
+      sortField: "username",
       selector: (row) => row.author,
       sortable: true,
     },
     {
       name: "Date",
-      sortField: "date",
+      sortField: "createdAt",
       selector: (row) => row.date,
       sortable: true,
     },
