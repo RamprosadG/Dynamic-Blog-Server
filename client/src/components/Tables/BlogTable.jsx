@@ -46,12 +46,14 @@ const BlogTable = () => {
           params: formData,
         })
         .then((response) => {
-          setData(response.data.data);
-          setTotalRows(response.data.totalRows.totalrows);
+          if (response.data.success) {
+            setData(response.data.data);
+            setTotalRows(response.data.totalRows);
+          }
           setLoading(false);
         });
     } catch (error) {
-      console.log("There is an error to fetch blogs");
+      console.log("Error to fetch blogs");
       setLoading(false);
     }
   };
@@ -139,8 +141,8 @@ const BlogTable = () => {
     },
     {
       name: "Publish date",
-      sortField: "publish_date",
-      selector: (row) => row.publish_date,
+      sortField: "publishDate",
+      selector: (row) => row.publishDate,
       sortable: true,
     },
     {
