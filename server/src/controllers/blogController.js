@@ -96,9 +96,18 @@ const deleteBlog = async (req, res) => {
 };
 
 const getBlogForTable = async (req, res) => {
-  const data = await getBlogForTableDB(req.query);
-  const totalRowsForBlogTable = await getTotalRowsForBlogTableDB(req.query);
-  res.json({ data: data, totalRows: totalRowsForBlogTable, success: true });
+  try {
+    const data = await getBlogForTableDB(req.query);
+
+    if (!data) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+    const totalRowsForBlogTable = await getTotalRowsForBlogTableDB(req.query);
+    res.json({ data: data, totalRows: totalRowsForBlogTable, success: true });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
+  }
 };
 
 module.exports = {

@@ -67,18 +67,11 @@ const deleteBlogDB = async (id) => {
 
 const getBlogForTableDB = async (data) => {
   try {
-    const {
-      search,
-      sortCol,
-      sortDir,
-      topic,
-      startDate,
-      endDate,
-      status,
-      row,
-      page,
-    } = data;
-    const offSet = row * (page - 1);
+    const { search, sortCol, sortDir, topic, startDate, endDate, status } =
+      data;
+    const row = parseInt(data.row);
+    const page = parseInt(data.page);
+    const offSet = parseInt(row * (page - 1));
 
     const result = await DB.blog.findMany({
       where: {
@@ -109,17 +102,17 @@ const getBlogForTableDB = async (data) => {
               },
             ],
           },
-          status !== undefined && { status: status },
+          status && { status: status },
           topic && { topicId: topic },
-          startDate && { date: { gte: new Date(startDate) } },
-          endDate && { date: { lte: new Date(endDate) } },
+          startDate && { createdAt: { gte: new Date(startDate) } },
+          endDate && { createdAt: { lte: new Date(endDate) } },
         ].filter(Boolean),
       },
       select: {
         id: true,
         title: true,
-        date: true,
-        publish_date: true,
+        createdAt: true,
+        publishDate: true,
         status: true,
         user: { select: { username: true } },
         topic: { select: { name: true } },
@@ -129,7 +122,17 @@ const getBlogForTableDB = async (data) => {
       skip: offSet,
     });
 
-    return result;
+    const tableData = result?.map((item) => ({
+      id: item.id,
+      title: item.title,
+      author: item.user.username,
+      topic: item.topic.name,
+      date: item.createdAt,
+      publishDate: item.publishDate,
+      status: item.status ? "Published" : "Not published",
+    }));
+
+    return tableData;
   } catch (err) {
     console.error(err);
     return false;
@@ -146,11 +149,17 @@ const getTotalRowsForBlogTableDB = async (data) => {
           search && {
             OR: [
               {
-                title: { contains: search.toLowerCase(), mode: "insensitive" },
+                title: {
+                  contains: search.toLowerCase(),
+                  mode: "insensitive",
+                },
               },
               {
                 topic: {
-                  name: { contains: search.toLowerCase(), mode: "insensitive" },
+                  name: {
+                    contains: search.toLowerCase(),
+                    mode: "insensitive",
+                  },
                 },
               },
               {
@@ -163,18 +172,19 @@ const getTotalRowsForBlogTableDB = async (data) => {
               },
             ],
           },
-          status !== undefined && { status: status },
+          status && { status: status },
           topic && { topicId: topic },
-          startDate && { date: { gte: new Date(startDate) } },
-          endDate && { date: { lte: new Date(endDate) } },
+          startDate && { createdAt: { gte: new Date(startDate) } },
+          endDate && { createdAt: { lte: new Date(endDate) } },
         ].filter(Boolean),
       },
     });
+    console.log(result);
 
-    return { totalRows: result };
+    return result;
   } catch (err) {
     console.error(err);
-    return { totalRows: 0 };
+    return 0;
   }
 };
 
@@ -196,7 +206,6 @@ const getSidebarDataDB = async (data) => {
       },
     });
 
-    console.log(result);
     return result;
   } catch (err) {
     console.error(err);
