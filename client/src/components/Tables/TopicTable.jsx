@@ -86,7 +86,7 @@ const TopicTable = () => {
     {
       name: "Number of Blog",
       sortField: "numberOfBlog",
-      selector: (row) => row.numberofblog,
+      selector: (row) => row.numberOfBlog,
       sortable: true,
     },
     {
