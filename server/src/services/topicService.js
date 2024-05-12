@@ -104,7 +104,7 @@ const getTopicForTableDB = async (data) => {
       name: item.name,
       numberOfBlog: item._count.blogs,
     }));
-    console.log(topicTableData);
+
     return topicTableData;
   } catch (err) {
     console.error(err);
@@ -118,17 +118,21 @@ const getTotalRowsForTopicTableDB = async (data) => {
 
     const result = await DB.topic.count({
       where: {
-        name: {
-          contains: search.toLowerCase(),
-          mode: "insensitive",
-        },
+        AND: [
+          search && {
+            name: {
+              contains: search.toLowerCase(),
+              mode: "insensitive",
+            },
+          },
+        ].filter(Boolean),
       },
     });
 
-    return { totalRows: result };
+    return result;
   } catch (err) {
     console.error(err);
-    return { totalRows: 0 };
+    return 0;
   }
 };
 
