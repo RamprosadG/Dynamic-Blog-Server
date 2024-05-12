@@ -37,7 +37,7 @@ const TopicTable = () => {
         })
         .then((response) => {
           setData(response.data.data);
-          setTotalRows(response.data.totalRows.totalrows);
+          setTotalRows(response.data.totalRows);
           setLoading(false);
         });
     } catch (error) {
