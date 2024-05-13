@@ -1,10 +1,10 @@
-import axios from "axios";
 import React, { useContext, useState } from "react";
 import { useFormik } from "formik";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { loginSchema } from "../../schema/loginForm";
 import AuthContext from "../../context/authContext";
+import axiosInstance from "../../api/axiosInstance";
 
 const LoginPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -19,18 +19,16 @@ const LoginPage = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       try {
-        axios
-          .post("http://localhost:5000/api/login", values)
-          .then((response) => {
-            if (response.data.success) {
-              setErrorMessage("");
-              setIsLoggedIn(true);
-              setUserInfo(response.data.data);
-              navigate("/");
-            } else {
-              setErrorMessage(response.data.message);
-            }
-          });
+        axiosInstance.post("/api/login", values).then((response) => {
+          if (response.data.success) {
+            setErrorMessage("");
+            setIsLoggedIn(true);
+            setUserInfo(response.data.data);
+            navigate("/");
+          } else {
+            setErrorMessage(response.data.message);
+          }
+        });
       } catch (error) {
         console.log("Error in login: ", error);
       }

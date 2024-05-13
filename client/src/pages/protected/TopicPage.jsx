@@ -1,8 +1,8 @@
 import { Button } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { Card, Form } from "react-bootstrap";
-import axios from "axios";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
 
 const TopicPage = () => {
   const [topicName, setTopicName] = useState("");
@@ -16,8 +16,8 @@ const TopicPage = () => {
   }, []);
 
   const setTopicValue = () => {
-    axios
-      .get(`http://localhost:5000/api/admin/topic/single/${id}`)
+    axiosInstance
+      .get(`/api/admin/topic/single/${id}`)
       .then((response) => {
         setTopicName(response.data.data.name);
       })
@@ -34,14 +34,14 @@ const TopicPage = () => {
     navigate("/admin");
   };
 
-  const handleAddTopic = async (e) => {
+  const handleAddTopic = (e) => {
     e.preventDefault();
     try {
       const formData = {
         name: topicName,
       };
-      axios
-        .post("http://localhost:5000/api/admin/topic/create", formData)
+      axiosInstance
+        .post("/api/admin/topic/create", formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -51,14 +51,14 @@ const TopicPage = () => {
     }
   };
 
-  const handleUpdateTopic = async (e) => {
+  const handleUpdateTopic = (e) => {
     e.preventDefault();
     try {
       const formData = {
         name: topicName,
       };
-      axios
-        .put(`http://localhost:5000/api/admin/topic/update/${id}`, formData)
+      axiosInstance
+        .put(`/api/admin/topic/update/${id}`, formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");

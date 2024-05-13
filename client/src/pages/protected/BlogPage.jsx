@@ -1,11 +1,11 @@
 import { Button, Col, Row } from "react-bootstrap";
 import React, { useState, useEffect, useContext } from "react";
 import { Card, Form } from "react-bootstrap";
-import axios from "axios";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import TopicDropdown from "../../components/Dropdown/TopicDropdown";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import AuthContext from "../../context/authContext";
+import axiosInstance from "../../api/axiosInstance";
 
 const BlogPage = () => {
   const [topic, setTopic] = useState("");
@@ -22,8 +22,8 @@ const BlogPage = () => {
   }, []);
 
   const setBlogValue = () => {
-    axios
-      .get(`http://localhost:5000/api/admin/blog/single/${id}`)
+    axiosInstance
+      .get(`/api/admin/blog/single/${id}`)
       .then((response) => {
         setTitle(response.data.data.title);
         setTopic(response.data.data.topicId);
@@ -50,7 +50,7 @@ const BlogPage = () => {
     navigate("/admin");
   };
 
-  const handleAddBlog = async (e) => {
+  const handleAddBlog = (e) => {
     e.preventDefault();
     try {
       const formData = {
@@ -59,8 +59,8 @@ const BlogPage = () => {
         description: description,
         userId: userInfo.id,
       };
-      await axios
-        .post("http://localhost:5000/api/admin/blog/create", formData)
+      axiosInstance
+        .post("/api/admin/blog/create", formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -70,7 +70,7 @@ const BlogPage = () => {
     }
   };
 
-  const handleUpdateBlog = async (e) => {
+  const handleUpdateBlog = (e) => {
     e.preventDefault();
     try {
       const formData = {
@@ -78,8 +78,8 @@ const BlogPage = () => {
         title: title,
         description: description,
       };
-      axios
-        .put(`http://localhost:5000/api/admin/blog/update/${id}`, formData)
+      axiosInstance
+        .put(`/api/admin/blog/update/${id}`, formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");

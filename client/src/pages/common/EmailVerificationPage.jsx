@@ -2,8 +2,8 @@ import React from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { verificationCodeSchema } from "../../schema/verifyEmailForm";
+import axiosInstance from "../../api/axiosInstance";
 
 const EmailVerificationPage = () => {
   const navigate = useNavigate();
@@ -16,11 +16,9 @@ const EmailVerificationPage = () => {
     validationSchema: verificationCodeSchema,
     onSubmit: (values) => {
       try {
-        axios
-          .post(`http://localhost:5000/api/verify/${token}`, values)
-          .then((response) => {
-            response.data.success && navigate("/");
-          });
+        axiosInstance.post(`/api/verify/${token}`, values).then((response) => {
+          response.data.success && navigate("/");
+        });
       } catch (error) {
         console.log("There is an error", error);
       }

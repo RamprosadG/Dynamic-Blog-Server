@@ -1,10 +1,10 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import ReactQuill from "react-quill";
 import { Form } from "react-bootstrap";
+import axiosInstance from "../../api/axiosInstance";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);
@@ -27,8 +27,8 @@ const HomePage = () => {
       search: searchText,
     };
     try {
-      axios
-        .get("http://localhost:5000/api/user/sidebar", {
+      axiosInstance
+        .get("/api/user/sidebar", {
           params: formData,
         })
         .then((response) => {
@@ -41,8 +41,8 @@ const HomePage = () => {
 
   const fetchBlogData = () => {
     try {
-      axios
-        .get(`http://localhost:5000/api/user/blog/single/${lastSelectedItem}`)
+      axiosInstance
+        .get(`/api/user/blog/single/${lastSelectedItem}`)
         .then((response) => {
           setBlogData(response.data.data);
         });
