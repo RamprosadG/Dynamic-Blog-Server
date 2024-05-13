@@ -6,6 +6,7 @@ import axiosInstance from "../../api/axiosInstance";
 
 const TopicPage = () => {
   const [topicName, setTopicName] = useState("");
+  const [topicError, setTopicError] = useState("")
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -27,7 +28,12 @@ const TopicPage = () => {
   };
 
   const handleTopicName = (event) => {
+    if (!event.target.value) {
+      setTopicError("Required")
+      return
+    }
     setTopicName(event.target.value);
+
   };
 
   const handleRedirectToAdminPage = () => {
@@ -36,6 +42,10 @@ const TopicPage = () => {
 
   const handleAddTopic = (e) => {
     e.preventDefault();
+    setTopicError(topicName ? "" : "Required")
+    if (!topicName) {
+      return
+    }
     try {
       const formData = {
         name: topicName,
@@ -84,6 +94,7 @@ const TopicPage = () => {
                   onChange={handleTopicName}
                 />
               </Form.Group>
+              <p className="text-danger fs-6">{topicError}</p>
             </Form>
 
             <div className="d-flex justify-content-end mt-4">

@@ -1,9 +1,9 @@
 import { Button, Col, Row } from "react-bootstrap";
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Card, Form } from "react-bootstrap";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import TopicDropdown from "../../components/Dropdown/TopicDropdown";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../../context/authContext";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -11,6 +11,9 @@ const BlogPage = () => {
   const [topic, setTopic] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [topicError, setTopicError] = useState("");
+  const [titleError, setTitleError] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
   const { userInfo } = useContext(AuthContext);
@@ -36,15 +39,19 @@ const BlogPage = () => {
 
   const handleTopicChange = (newTopic) => {
     setTopic(newTopic);
+    // setTopicError(newTopic ? "" : "Required");
   };
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
+    // setTitleError(event.target.value ? "" : "Required");
   };
 
   const handleDescriptionChange = (newDescription) => {
     setDescription(newDescription);
+    // setDescriptionError(newDescription ? "" : "Required");
   };
+
 
   const handleRedirectToAdminPage = () => {
     navigate("/admin");
@@ -52,6 +59,19 @@ const BlogPage = () => {
 
   const handleAddBlog = (e) => {
     e.preventDefault();
+    const topicIsValid = topic && topic !== "Select topic";
+    const titleIsValid = title.trim() !== "";
+    const descriptionIsValid = description.trim() !== "";
+
+    // Update error messages
+    setTopicError(topicIsValid ? "" : "Required");
+    setTitleError(titleIsValid ? "" : "Required");
+    setDescriptionError(descriptionIsValid ? "" : "Required");
+
+    // If any field is invalid, prevent form submission
+    if (!topicIsValid || !titleIsValid || !descriptionIsValid) {
+      return;
+    }
     try {
       const formData = {
         topicId: topic,
@@ -99,15 +119,18 @@ const BlogPage = () => {
               <Col md={6}>
                 <Form.Label>Select topic</Form.Label>
                 <TopicDropdown value={topic} updateTopic={handleTopicChange} />
+                <p className="text-danger fs-6">{topicError}</p>
               </Col>
               <Col md={6}>
                 <Form.Label>Blog title</Form.Label>
                 <Form.Control
+                  required
                   type="text"
                   value={title}
                   onChange={handleTitleChange}
                   placeholder="Enter a title"
                 />
+                <p className="text-danger fs-6">{titleError}</p>
               </Col>
             </Row>
             <Row className="my-3">
@@ -115,7 +138,9 @@ const BlogPage = () => {
                 updateDescription={handleDescriptionChange}
                 value={description}
               />
+
             </Row>
+            <p className="text-danger fs-6">{descriptionError}</p>
             <Row>
               <Col className="d-flex justify-content-end mt-4">
                 <Button
