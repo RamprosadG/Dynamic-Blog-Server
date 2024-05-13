@@ -1,9 +1,9 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { registerSchema } from "../../schema/registerForm";
+import axiosInstance from "../../api/axiosInstance";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -18,16 +18,14 @@ const RegisterPage = () => {
     validationSchema: registerSchema,
     onSubmit: (values) => {
       try {
-        axios
-          .post("http://localhost:5000/api/register", values)
-          .then((response) => {
-            if (response.data.success) {
-              navigate(`/verify/${response.data.token}`);
-              setErrorMessage("");
-            } else {
-              setErrorMessage(response.data.message);
-            }
-          });
+        axiosInstance.post("/api/register", values).then((response) => {
+          if (response.data.success) {
+            navigate(`/verify/${response.data.token}`);
+            setErrorMessage("");
+          } else {
+            setErrorMessage(response.data.message);
+          }
+        });
       } catch (error) {
         console.log("Error in register: ", error);
       }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
-import axios from "axios";
+import axiosInstance from "../../api/axiosInstance";
 
 const TopicDropdown = ({ value, updateTopic }) => {
   const [options, setOptions] = useState([]);
@@ -16,8 +16,8 @@ const TopicDropdown = ({ value, updateTopic }) => {
   };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/admin/topic/all")
+    axiosInstance
+      .get("/api/admin/topic/all")
       .then((response) => {
         const topic = response.data.data;
         setOptions(topic);

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import DataTable from "react-data-table-component";
 import TopicDropdown from "../Dropdown/TopicDropdown";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -7,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import TableCustomStyles from "./TableCustomStyles";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
 
 const BlogTable = () => {
   const [data, setData] = useState([]);
@@ -41,8 +41,8 @@ const BlogTable = () => {
         status: status,
       };
 
-      axios
-        .get("http://localhost:5000/api/admin/blog/table", {
+      axiosInstance
+        .get("/api/admin/blog/table", {
           params: formData,
         })
         .then((response) => {
@@ -96,9 +96,9 @@ const BlogTable = () => {
     setSearchText(e.target.value);
   };
 
-  const handleDeleteBlog = async (id) => {
-    await axios
-      .delete(`http://localhost:5000/api/admin/blog/remove/${id}`)
+  const handleDeleteBlog = (id) => {
+    axiosInstance
+      .delete(`/api/admin/blog/remove/${id}`)
       .then((response) => {
         alert(response.data.message);
         response.data.success && fetchData();
