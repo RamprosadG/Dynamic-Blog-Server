@@ -1,20 +1,41 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import React, { useContext, useState } from "react";
+import { useFormik } from "formik";
+import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { loginSchema } from "../../schema/loginForm";
+import AuthContext from "../../context/authContext";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { setIsLoggedIn, setUserInfo } = useContext(AuthContext);
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: loginSchema,
+    onSubmit: (values) => {
+      try {
+        axios
+          .post("http://localhost:5000/api/login", values)
+          .then((response) => {
+            if (response.data.success) {
+              setErrorMessage("");
+              setIsLoggedIn(true);
+              setUserInfo(response.data.data);
+              navigate("/");
+            } else {
+              setErrorMessage(response.data.message);
+            }
+          });
+      } catch (error) {
+        console.log("Error in login: ", error);
+      }
+    },
+  });
 
   const handleForgotPassword = () => {
     // Need to code to handle forgot password
@@ -25,76 +46,72 @@ const LoginPage = () => {
     navigate("/register");
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = {
-        email: email,
-        password: password,
-      };
-      await axios
-        .post("http://localhost:5000/login", formData)
-        .then((response) => {
-          response.data.success && navigate("/");
-          alert(response.data.message);
-        });
-    } catch (error) {
-      console.log("There is an error", error);
-    }
-  };
-
   return (
     <>
-      <div className="d-flex justify-content-center">
-        <div className="card card-width mt-3">
-          <div className="card-body">
-            <div className="card-title text-center">
-              <h2>Login</h2>
-            </div>
+      <Row className="justify-content-center">
+        <Col md={6} lg={4}>
+          <Card className="mt-3">
+            <Card.Body>
+              <Card.Title className="text-center mb-5">
+                <h2>Login</h2>
+              </Card.Title>
+              {errorMessage && (
+                <div className="error-message mb-2">{errorMessage}</div>
+              )}
+              <Form onSubmit={formik.handleSubmit}>
+                <Form.Group className="mb-4">
+                  <Form.Control
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.email}
+                  />
+                  {formik.touched.email && formik.errors.email ? (
+                    <div className="error-message">{formik.errors.email}</div>
+                  ) : null}
+                </Form.Group>
 
-            <Form>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Enter email</Form.Label>
-                <Form.Control
-                  type="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Enter password</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
-              </Form.Group>
-              <div className="d-flex justify-content-between mt-3">
-                <div>
-                  <Button
-                    variant="outline-secondary"
-                    className="ms-3"
-                    onClick={handleLogin}
-                  >
-                    Login
+                <Form.Group className="mb-4">
+                  <Form.Control
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.password}
+                  />
+                  {formik.touched.password && formik.errors.password ? (
+                    <div className="error-message">
+                      {formik.errors.password}
+                    </div>
+                  ) : null}
+                </Form.Group>
+                <Form.Group className="d-flex justify-content-between mt-3">
+                  <div>
+                    <Button variant="outline-secondary" type="submit">
+                      Login
+                    </Button>
+                  </div>
+                  <div>
+                    <Button variant="link" onClick={handleForgotPassword}>
+                      Forgot Password?
+                    </Button>
+                  </div>
+                </Form.Group>
+                <Form.Group className="d-flex justify-content-center mt-4">
+                  <Button variant="link" onClick={handleNavigateRegisterPage}>
+                    Don't have an account? Register
                   </Button>
-                </div>
-                <div>
-                  <Button variant="link" onClick={handleForgotPassword}>
-                    Forgot Password?
-                  </Button>
-                </div>
-              </div>
-              <div className="d-flex justify-content-center mt-4">
-                <Button variant="link" onClick={handleNavigateRegisterPage}>
-                  Create an account
-                </Button>
-              </div>
-            </Form>
-          </div>
-        </div>
-      </div>
+                </Form.Group>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 };

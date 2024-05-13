@@ -1,99 +1,120 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Row, Col, Card } from "react-bootstrap";
+import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
+import { registerSchema } from "../../schema/registerForm";
 
 const RegisterPage = () => {
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleUserNameChange = (e) => {
-    setUserName(e.target.value);
-  };
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+    validationSchema: registerSchema,
+    onSubmit: (values) => {
+      try {
+        axios
+          .post("http://localhost:5000/api/register", values)
+          .then((response) => {
+            if (response.data.success) {
+              navigate(`/verify/${response.data.token}`);
+              setErrorMessage("");
+            } else {
+              setErrorMessage(response.data.message);
+            }
+          });
+      } catch (error) {
+        console.log("Error in register: ", error);
+      }
+    },
+  });
 
   const handleNavigateLoginPage = () => {
     navigate("/login");
   };
 
-  const handleRegister = async (e) => {
-    //console.log("Register clicked");
-    e.preventDefault();
-    try {
-      const formData = {
-        userName: userName,
-        email: email,
-        password: password,
-      };
-      await axios
-        .post("http://localhost:5000/register", formData)
-        .then((response) => {
-          navigate("/login");
-          alert(response.data.message);
-        });
-    } catch (error) {
-      console.log("There is an error", error);
-    }
-  };
-
   return (
     <>
-      <div className="d-flex justify-content-center">
-        <div className="card card-width my-3">
-          <div className="card-body">
-            <div className="card-title text-center">
-              <h2>Register</h2>
-            </div>
-            <Form.Group className="mb-3" controlId="formBasicUserName">
-              <Form.Label>Enter username</Form.Label>
-              <Form.Control
-                type="text"
-                value={userName}
-                onChange={handleUserNameChange}
-              />
-            </Form.Group>
-            <Form>
-              <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Enter Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                />
-              </Form.Group>
+      <Row className="justify-content-center">
+        <Col md={6} lg={4}>
+          <Card className="my-3">
+            <Card.Body>
+              <Card.Title className="text-center mb-5">
+                <h2>Register</h2>
+              </Card.Title>
+              {errorMessage && (
+                <div className="error-message mb-2">{errorMessage}</div>
+              )}
+              <Form onSubmit={formik.handleSubmit}>
+                <Form.Group className="mb-4">
+                  <Form.Control
+                    id="username"
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.username}
+                  />
+                  {formik.touched.username && formik.errors.username ? (
+                    <div className="error-message">
+                      {formik.errors.username}
+                    </div>
+                  ) : null}
+                </Form.Group>
 
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Enter Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
-              </Form.Group>
+                <Form.Group className="mb-4">
+                  <Form.Control
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.email}
+                  />
+                  {formik.touched.email && formik.errors.email ? (
+                    <div className="error-message">{formik.errors.email}</div>
+                  ) : null}
+                </Form.Group>
 
-              <div className="mt-3">
-                <Button variant="outline-secondary" onClick={handleRegister}>
-                  Register
-                </Button>
-              </div>
-              <div className="d-flex justify-content-center mt-4">
-                <Button variant="link" onClick={handleNavigateLoginPage}>
-                  Already have an account? Login
-                </Button>
-              </div>
-            </Form>
-          </div>
-        </div>
-      </div>
+                <Form.Group className="mb-4">
+                  <Form.Control
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.password}
+                  />
+                  {formik.touched.password && formik.errors.password ? (
+                    <div className="error-message">
+                      {formik.errors.password}
+                    </div>
+                  ) : null}
+                </Form.Group>
+
+                <Form.Group className="mt-3">
+                  <Button variant="outline-secondary" type="submit">
+                    Register
+                  </Button>
+                </Form.Group>
+                <Form.Group className="d-flex justify-content-center mt-4">
+                  <Button variant="link" onClick={handleNavigateLoginPage}>
+                    Already have an account? Login
+                  </Button>
+                </Form.Group>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 };

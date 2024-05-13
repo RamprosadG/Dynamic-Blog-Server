@@ -1,49 +1,26 @@
-const {
-  fetchSidebarData,
-  getOneBlogbyIdFromDatabase,
-  getRandomBlogIdFromDatabase,
-} = require("../models/blogModel");
-const { formatSidebarData } = require("../utils/utils");
+const { getSidebarDataDB } = require("../services/blogService");
+const { formatSidebarData } = require("../utils/formatSidebarData");
 
-exports.getSidebarData = async (req, res) => {
-  const result = await fetchSidebarData(req.query);
+const getSidebarData = async (req, res) => {
+  try {
+    const result = await getSidebarDataDB(req.query);
 
-  if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+    const sidebarData = await formatSidebarData(result);
+
+    res.json({
+      message: "Fetched the sidebar data successfully.",
+      data: sidebarData,
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
   }
-  const sidebarData = await formatSidebarData(result);
-
-  res.json({
-    message: "Fetched the sidebar data successfully.",
-    data: sidebarData,
-    success: true,
-  });
 };
 
-exports.getOneBlogbyId = async (req, res) => {
-  const result = await getOneBlogbyIdFromDatabase(req.query);
-
-  if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
-  }
-
-  res.json({
-    message: "Fetched the blog successfully.",
-    data: result[0],
-    success: true,
-  });
-};
-
-exports.getRandomBlogId = async (req, res) => {
-  const result = await getRandomBlogIdFromDatabase();
-
-  if (!result) {
-    return res.json({ message: "Internal server error.", success: false });
-  }
-
-  res.json({
-    message: "Fetched the blog successfully.",
-    data: result[0],
-    success: true,
-  });
+module.exports = {
+  getSidebarData,
 };
