@@ -8,7 +8,6 @@ const {
 const { USER_SECRET_KEY, SMTP_SECRET_KEY } = require("../configs/config");
 const sendNewsLetter = require("../utils/newsLetter");
 const getVerificationCode = require("../utils/generateVerificationCode");
-const { faDownLong } = require("@fortawesome/free-solid-svg-icons");
 
 const handleLogin = async (req, res) => {
   try {
