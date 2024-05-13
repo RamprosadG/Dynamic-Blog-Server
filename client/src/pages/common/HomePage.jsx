@@ -8,7 +8,7 @@ import { Form } from "react-bootstrap";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);
-  const [lastSelectedItem, setLastSelectedItem] = useState(null);
+  const [lastSelectedItem, setLastSelectedItem] = useState("");
   const [blogData, setBlogData] = useState(null);
   const [searchText, setSearchText] = useState("");
 
@@ -17,24 +17,10 @@ const HomePage = () => {
   }, [searchText]);
 
   useEffect(() => {
-    fetchBlogData();
-  }, [lastSelectedItem]);
-
-  useEffect(() => {
-    fetchRandomBlogId();
-  }, []);
-
-  const fetchRandomBlogId = () => {
-    try {
-      axios
-        .get("http://localhost:5000/user/getRandomBlogId")
-        .then((response) => {
-          setLastSelectedItem(response.data.data.id);
-        });
-    } catch (error) {
-      console.log("There is an error to fetch sidebar data");
+    if (lastSelectedItem) {
+      fetchBlogData();
     }
-  };
+  }, [lastSelectedItem]);
 
   const fetchSidebarData = () => {
     const formData = {
@@ -42,7 +28,7 @@ const HomePage = () => {
     };
     try {
       axios
-        .get("http://localhost:5000/user/getSidebarData", {
+        .get("http://localhost:5000/api/user/sidebar", {
           params: formData,
         })
         .then((response) => {
@@ -55,13 +41,8 @@ const HomePage = () => {
 
   const fetchBlogData = () => {
     try {
-      const formData = {
-        id: lastSelectedItem,
-      };
       axios
-        .get("http://localhost:5000/user/getOneBlogById", {
-          params: formData,
-        })
+        .get(`http://localhost:5000/api/user/blog/single/${lastSelectedItem}`)
         .then((response) => {
           setBlogData(response.data.data);
         });
@@ -71,13 +52,17 @@ const HomePage = () => {
   };
 
   const handleItemSelectionToggle = (event, itemId, isSelected) => {
-    if (isSelected && !isNaN(itemId)) {
+    const guid = new RegExp(
+      /^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$/
+    );
+
+    if (isSelected && guid.test(itemId)) {
+      console.log(itemId);
       setLastSelectedItem(itemId);
     }
   };
 
   const handleSearchChange = (e) => {
-    console.log(e.target.value);
     setSearchText(e.target.value);
   };
 

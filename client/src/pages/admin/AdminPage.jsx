@@ -12,7 +12,7 @@ const AdminPage = () => {
             <h1>List of blog</h1>
           </div>
           <div className="col d-flex justify-content-end">
-            <Link to="/blog/Add" state={{ id: 0 }}>
+            <Link to="/blog">
               <button type="button" className="btn btn-outline-secondary">
                 Add a blog
               </button>
@@ -28,7 +28,7 @@ const AdminPage = () => {
             <h1>List of topic</h1>
           </div>
           <div className="col d-flex justify-content-end">
-            <Link to="/topic/Add" state={{ id: 0 }}>
+            <Link to="/topic">
               <button type="button" className="btn btn-outline-secondary">
                 Add a topic
               </button>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import TopicDropdown from "../Dropdown/TopicDropdown";
-import { Form } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import TableCustomStyles from "./TableCustomStyles";
@@ -24,17 +24,7 @@ const BlogTable = () => {
 
   useEffect(() => {
     fetchData();
-  }, [
-    currentPage,
-    paginationTotalRows,
-    sortColumn,
-    sortDirection,
-    searchText,
-    topic,
-    startDate,
-    endDate,
-    status,
-  ]);
+  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, searchText]);
 
   const fetchData = () => {
     try {
@@ -52,18 +42,25 @@ const BlogTable = () => {
       };
 
       axios
-        .get("http://localhost:5000/admin/getBlogsForTable", {
+        .get("http://localhost:5000/api/admin/blog/table", {
           params: formData,
         })
         .then((response) => {
-          setData(response.data.data);
-          setTotalRows(response.data.totalRows.totalrows);
+          if (response.data.success) {
+            setData(response.data.data);
+            setTotalRows(response.data.totalRows);
+          }
           setLoading(false);
         });
     } catch (error) {
-      console.log("There is an error to fetch blogs");
+      console.log("Error to fetch blogs");
       setLoading(false);
     }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    fetchData();
   };
 
   const handleStatusChange = (e) => {
@@ -100,13 +97,8 @@ const BlogTable = () => {
   };
 
   const handleDeleteBlog = async (id) => {
-    const formData = {
-      id: id,
-    };
     await axios
-      .delete("http://localhost:5000/admin/deleteBlog", {
-        data: formData,
-      })
+      .delete(`http://localhost:5000/api/admin/blog/remove/${id}`)
       .then((response) => {
         alert(response.data.message);
         response.data.success && fetchData();
@@ -125,19 +117,19 @@ const BlogTable = () => {
     },
     {
       name: "Topic",
-      sortField: "topic",
+      sortField: "name",
       selector: (row) => row.topic,
       sortable: true,
     },
     {
       name: "Author",
-      sortField: "author",
+      sortField: "username",
       selector: (row) => row.author,
       sortable: true,
     },
     {
       name: "Date",
-      sortField: "date",
+      sortField: "createdAt",
       selector: (row) => row.date,
       sortable: true,
     },
@@ -149,8 +141,8 @@ const BlogTable = () => {
     },
     {
       name: "Publish date",
-      sortField: "publish_date",
-      selector: (row) => row.publish_date,
+      sortField: "publishDate",
+      selector: (row) => row.publishDate,
       sortable: true,
     },
     {
@@ -160,7 +152,7 @@ const BlogTable = () => {
         return (
           <div className="container ms-2">
             <div className="d-flex justify-content-start">
-              <Link to="/blog/Update" state={{ id: row.id }}>
+              <Link to={`/blog/${row.id}`}>
                 <button type="button" className="btn btn-secondary, btn-sm">
                   <FontAwesomeIcon icon={faPenToSquare} />
                 </button>
@@ -183,32 +175,32 @@ const BlogTable = () => {
 
   return (
     <>
-      <div className="row">
-        <div className="col-3">
-          <Form.Label>Topic</Form.Label>
-          <TopicDropdown updateTopic={handleTopicChange} value={topic} />
-        </div>
-        <div className="col-3">
-          <Form.Label>Status</Form.Label>
-          <select
-            className="form-select"
-            id="blog-table-status"
-            onChange={handleStatusChange}
-            value={status}
-          >
-            <option id="status" value="">
-              Select status
-            </option>
-            <option id="published" value="true">
-              Published
-            </option>
-            <option id="not-published" value="false">
-              Not published
-            </option>
-          </select>
-        </div>
-        <div className="col-3">
-          <Form>
+      <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col xs={12} sm={6} md={2}>
+            <Form.Label>Topic</Form.Label>
+            <TopicDropdown updateTopic={handleTopicChange} value={topic} />
+          </Col>
+          <Col xs={12} sm={6} md={2}>
+            <Form.Label>Status</Form.Label>
+            <select
+              className="form-select"
+              id="blog-table-status"
+              onChange={handleStatusChange}
+              value={status}
+            >
+              <option id="status" value="">
+                Select status
+              </option>
+              <option id="published" value="true">
+                Published
+              </option>
+              <option id="not-published" value="false">
+                Not published
+              </option>
+            </select>
+          </Col>
+          <Col xs={12} sm={6} md={3}>
             <Form.Label>Start date</Form.Label>
             <Form.Control
               type="datetime-local"
@@ -216,10 +208,8 @@ const BlogTable = () => {
               value={startDate}
               onChange={handleStartDateChange}
             />
-          </Form>
-        </div>
-        <div className="col-3">
-          <Form>
+          </Col>
+          <Col xs={12} sm={6} md={3}>
             <Form.Label>End date</Form.Label>
             <Form.Control
               type="datetime-local"
@@ -227,22 +217,29 @@ const BlogTable = () => {
               value={endDate}
               onChange={handleEndDateChange}
             />
-          </Form>
-        </div>
-      </div>
-      <div className="row mt-5 mb-2">
-        <div className="col-3">
-          <Form.Control
-            type="search"
-            id="blog-table-search"
-            placeholder="Search"
-            value={searchText}
-            onChange={handleSearchChange}
-            className="me-2"
-            aria-label="Search"
-          />
-        </div>
-      </div>
+          </Col>
+          <Col xs={12} sm={6} md={2}>
+            <div className="table-button-generate">
+              <Button variant="outline-secondary" type="submit">
+                Generate
+              </Button>
+            </div>
+          </Col>
+        </Row>
+        <Row className="mt-5 mb-2">
+          <Col xs={6} sm={3}>
+            <Form.Control
+              type="search"
+              id="blog-table-search"
+              placeholder="Search"
+              value={searchText}
+              onChange={handleSearchChange}
+              className="me-2"
+              aria-label="Search"
+            />
+          </Col>
+        </Row>
+      </Form>
       <DataTable
         id="blog-table"
         striped={true}

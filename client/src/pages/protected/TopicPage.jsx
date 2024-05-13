@@ -7,24 +7,17 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 const TopicPage = () => {
   const [topicName, setTopicName] = useState("");
   const navigate = useNavigate();
-  const { option } = useParams();
-  const location = useLocation();
-  const id = location.state.id;
+  const { id } = useParams();
 
   useEffect(() => {
-    if (option == "Update") {
+    if (id) {
       setTopicValue();
     }
   }, []);
 
   const setTopicValue = () => {
-    const formData = {
-      id: id,
-    };
     axios
-      .get("http://localhost:5000/admin/getTopic", {
-        params: formData,
-      })
+      .get(`http://localhost:5000/api/admin/topic/single/${id}`)
       .then((response) => {
         setTopicName(response.data.data.name);
       })
@@ -37,10 +30,6 @@ const TopicPage = () => {
     setTopicName(event.target.value);
   };
 
-  const handleReset = () => {
-    setTopicName("");
-  };
-
   const handleRedirectToAdminPage = () => {
     navigate("/admin");
   };
@@ -51,8 +40,8 @@ const TopicPage = () => {
       const formData = {
         name: topicName,
       };
-      await axios
-        .post("http://localhost:5000/admin/addTopic", formData)
+      axios
+        .post("http://localhost:5000/api/admin/topic/create", formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -66,11 +55,10 @@ const TopicPage = () => {
     e.preventDefault();
     try {
       const formData = {
-        id: id,
         name: topicName,
       };
-      await axios
-        .put("http://localhost:5000/admin/updateTopic", formData)
+      axios
+        .put(`http://localhost:5000/api/admin/topic/update/${id}`, formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -101,17 +89,9 @@ const TopicPage = () => {
             <div className="d-flex justify-content-end mt-4">
               <Button
                 variant="outline-secondary"
-                className="mr-2"
-                onClick={handleReset}
+                onClick={!id ? handleAddTopic : handleUpdateTopic}
               >
-                Reset
-              </Button>
-              <Button
-                variant="outline-secondary"
-                className="ms-2"
-                onClick={option === "Add" ? handleAddTopic : handleUpdateTopic}
-              >
-                {option} topic
+                {id ? "Update" : "Add"} topic
               </Button>
             </div>
 

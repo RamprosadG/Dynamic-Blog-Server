@@ -12,6 +12,7 @@ import "./styles/styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "styled-components";
 import "react-quill/dist/quill.snow.css";
+import EmailVerificationPage from "./pages/common/EmailVerificationPage";
 
 const App = () => {
   return (
@@ -23,8 +24,9 @@ const App = () => {
           <Route path="/login" Component={LoginPage} />
           <Route path="/register" Component={RegisterPage} />
           <Route path="/admin" Component={AdminPage} />
-          <Route path="/blog/:option" Component={BlogPage} />
-          <Route path="/topic/:option" Component={TopicPage} />
+          <Route path="/blog/:id?" Component={BlogPage} />
+          <Route path="/topic/:id?" Component={TopicPage} />
+          <Route path="/verify/:token?" Component={EmailVerificationPage} />
           <Route path="*" Component={ErrorPage} />
         </Routes>
       </BrowserRouter>

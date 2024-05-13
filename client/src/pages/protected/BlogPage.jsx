@@ -1,37 +1,32 @@
 import { Button, Col, Row } from "react-bootstrap";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Card, Form } from "react-bootstrap";
 import axios from "axios";
 import TextEditor from "../../components/TextEditor/TextEditor";
 import TopicDropdown from "../../components/Dropdown/TopicDropdown";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import AuthContext from "../../context/authContext";
 
 const BlogPage = () => {
   const [topic, setTopic] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const navigate = useNavigate();
-  const { option } = useParams();
-  const location = useLocation();
-  const id = location.state.id;
+  const { id } = useParams();
+  const { userInfo } = useContext(AuthContext);
 
   useEffect(() => {
-    if (option == "Update") {
+    if (id) {
       setBlogValue();
     }
   }, []);
 
   const setBlogValue = () => {
-    const formData = {
-      id: id,
-    };
     axios
-      .get("http://localhost:5000/admin/getBlog", {
-        params: formData,
-      })
+      .get(`http://localhost:5000/api/admin/blog/single/${id}`)
       .then((response) => {
         setTitle(response.data.data.title);
-        setTopic(response.data.data.topic_id);
+        setTopic(response.data.data.topicId);
         setDescription(response.data.data.description);
       })
       .catch(() => {
@@ -57,19 +52,15 @@ const BlogPage = () => {
 
   const handleAddBlog = async (e) => {
     e.preventDefault();
-    const date = new Date();
     try {
       const formData = {
         topicId: topic,
         title: title,
         description: description,
-        userId: 1, //need to update later
-        date: date,
-        status: false,
-        publishDate: date,
+        userId: userInfo.id,
       };
       await axios
-        .post("http://localhost:5000/admin/addBlog", formData)
+        .post("http://localhost:5000/api/admin/blog/create", formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -83,13 +74,12 @@ const BlogPage = () => {
     e.preventDefault();
     try {
       const formData = {
-        id: id,
         topicId: topic,
         title: title,
         description: description,
       };
-      await axios
-        .put("http://localhost:5000/admin/updateBlog", formData)
+      axios
+        .put(`http://localhost:5000/api/admin/blog/update/${id}`, formData)
         .then((response) => {
           alert(response.data.message);
           response.data.success && navigate("/admin");
@@ -131,9 +121,9 @@ const BlogPage = () => {
                 <Button
                   variant="outline-secondary"
                   className="ms-2"
-                  onClick={option === "Add" ? handleAddBlog : handleUpdateBlog}
+                  onClick={!id ? handleAddBlog : handleUpdateBlog}
                 >
-                  {option} blog
+                  {id ? "Update" : "Add"} blog
                 </Button>
               </Col>
             </Row>
