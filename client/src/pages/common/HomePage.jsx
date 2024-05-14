@@ -5,12 +5,15 @@ import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import ReactQuill from "react-quill";
 import { Form } from "react-bootstrap";
 import axiosInstance from "../../api/axiosInstance";
+import moment from "moment";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);
   const [lastSelectedItem, setLastSelectedItem] = useState("");
   const [blogData, setBlogData] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(7);
 
   useEffect(() => {
     fetchSidebarData();
@@ -21,6 +24,28 @@ const HomePage = () => {
       fetchBlogData();
     }
   }, [lastSelectedItem]);
+
+  useEffect(() => {
+    fetchPaginationData();
+  }, [page]);
+
+  const fetchPaginationData = () => {
+    const formData = {
+      page: page,
+      pageSize: pageSize,
+    };
+    try {
+      axiosInstance
+        .get("/api/user/blog/pagination", {
+          params: formData,
+        })
+        .then((response) => {
+          console.log(response.data.data);
+        });
+    } catch (error) {
+      console.log("There is an error to fetch sidebar data");
+    }
+  };
 
   const fetchSidebarData = () => {
     const formData = {

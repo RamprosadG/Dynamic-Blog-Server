@@ -1,12 +1,13 @@
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { Card, Form } from "react-bootstrap";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
+import { useFormik } from "formik";
+import { topicSchema } from "../../schema/topicForm";
 
 const TopicPage = () => {
-  const [topicName, setTopicName] = useState("");
-  const [topicError, setTopicError] = useState("")
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -20,104 +21,108 @@ const TopicPage = () => {
     axiosInstance
       .get(`/api/admin/topic/single/${id}`)
       .then((response) => {
-        setTopicName(response.data.data.name);
+        if (response.data.success) {
+          formik.setFieldValue("name", response.data.data.name);
+        }
       })
       .catch(() => {
-        console.log("server error");
+        console.log("Error to set topic.");
       });
-  };
-
-  const handleTopicName = (event) => {
-    if (!event.target.value) {
-      setTopicError("Required")
-      return
-    }
-    setTopicName(event.target.value);
-
   };
 
   const handleRedirectToAdminPage = () => {
     navigate("/admin");
   };
 
-  const handleAddTopic = (e) => {
-    e.preventDefault();
-    setTopicError(topicName ? "" : "Required")
-    if (!topicName) {
-      return
-    }
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+    },
+    validationSchema: topicSchema,
+    onSubmit: (values) => {
+      !id ? handleAddTopic(values) : handleUpdateTopic(values);
+    },
+  });
+
+  const handleAddTopic = (values) => {
     try {
-      const formData = {
-        name: topicName,
-      };
-      axiosInstance
-        .post("/api/admin/topic/create", formData)
-        .then((response) => {
+      axiosInstance.post("/api/admin/topic/create", values).then((response) => {
+        if (response.data.success) {
           alert(response.data.message);
-          response.data.success && navigate("/admin");
-        });
+          navigate("/admin");
+        } else {
+          setErrorMessage(response.data.message);
+        }
+      });
     } catch (error) {
       console.log("Error to add topic");
     }
   };
 
-  const handleUpdateTopic = (e) => {
-    e.preventDefault();
+  const handleUpdateTopic = (values) => {
     try {
-      const formData = {
-        name: topicName,
-      };
       axiosInstance
-        .put(`/api/admin/topic/update/${id}`, formData)
+        .put(`/api/admin/topic/update/${id}`, values)
         .then((response) => {
-          alert(response.data.message);
-          response.data.success && navigate("/admin");
+          if (response.data.success) {
+            alert(response.data.message);
+            navigate("/admin");
+          } else {
+            setErrorMessage(response.data.message);
+          }
         });
     } catch (error) {
-      console.log("There is an error");
+      console.log("Error to upsate topic.");
     }
   };
 
   return (
     <>
-      <div className="d-flex justify-content-center my-5">
-        <Card className="card-width">
-          <Card.Body>
-            <Card.Title className="text-center">Add a topic</Card.Title>
-            <Form className="my-3">
-              <Form.Group controlId="topic-name">
-                <Form.Label>Topic name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter topic name"
-                  value={topicName}
-                  onChange={handleTopicName}
-                />
-              </Form.Group>
-              <p className="text-danger fs-6">{topicError}</p>
-            </Form>
+      <Row className="justify-content-center">
+        <Col md={6} lg={4}>
+          <Card className="mt-3">
+            <Card.Body>
+              <Card.Title className="text-center">Topic</Card.Title>
+              {errorMessage && (
+                <div className="error-message mb-2">{errorMessage}</div>
+              )}
+              <Form className="my-3" onSubmit={formik.handleSubmit}>
+                <Form.Group>
+                  <Form.Label>Topic name</Form.Label>
+                  <Form.Control
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Enter name"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.name}
+                  />
+                  {formik.touched.name && formik.errors.name ? (
+                    <div className="error-message">{formik.errors.name}</div>
+                  ) : null}
+                </Form.Group>
 
-            <div className="d-flex justify-content-end mt-4">
-              <Button
-                variant="outline-secondary"
-                onClick={!id ? handleAddTopic : handleUpdateTopic}
-              >
-                {id ? "Update" : "Add"} topic
-              </Button>
-            </div>
+                <Form.Group className="d-flex justify-content-end mt-4">
+                  <Button variant="outline-secondary" type="submit">
+                    {id ? "Save changes" : "Submit"}
+                  </Button>
+                </Form.Group>
 
-            <div className="col">
-              <Button
-                variant="link"
-                className="ms-2"
-                onClick={handleRedirectToAdminPage}
-              >
-                Back to admin page
-              </Button>
-            </div>
-          </Card.Body>
-        </Card>
-      </div>
+                <Form.Group>
+                  <Button
+                    variant="link"
+                    className="ms-2"
+                    onClick={handleRedirectToAdminPage}
+                  >
+                    Back to admin page
+                  </Button>
+                </Form.Group>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </>
   );
 };
