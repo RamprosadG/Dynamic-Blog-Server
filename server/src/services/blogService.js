@@ -241,13 +241,12 @@ const getBlogForPaginationDB = async (data) => {
       select: {
         id: true,
         title: true,
-        description: {
-          take: 100,
-        },
+        description: true,
         publishDate: true,
         topic: { select: { name: true } },
         user: { select: { username: true } },
       },
+      orderBy: { publishDate: "desc" },
       take: pageSize,
       skip: offSet,
     });
