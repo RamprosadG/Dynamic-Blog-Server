@@ -202,10 +202,17 @@ const getSidebarDataDB = async (data) => {
 
     const result = await DB.blog.findMany({
       where: {
-        title: {
-          contains: search ? search.toLowerCase() : "",
-          mode: "insensitive",
-        },
+        AND: [
+          {
+            status: true,
+          },
+          search && {
+            title: {
+              contains: search.toLowerCase(),
+              mode: "insensitive",
+            },
+          },
+        ].filter(Boolean),
       },
       select: {
         id: true,
@@ -221,6 +228,63 @@ const getSidebarDataDB = async (data) => {
   }
 };
 
+const getBlogForPaginationDB = async (data) => {
+  try {
+    const page = parseInt(data.page);
+    const pageSize = parseInt(data.pageSize);
+    const offSet = parseInt((page - 1) * pageSize);
+
+    const result = await DB.blog.findMany({
+      where: {
+        status: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: {
+          take: 100,
+        },
+        publishDate: true,
+        topic: { select: { name: true } },
+        user: { select: { username: true } },
+      },
+      take: pageSize,
+      skip: offSet,
+    });
+
+    const paginationData = result?.map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      author: item.user.username,
+      topic: item.topic.name,
+      publishDate: item.publishDate,
+    }));
+
+    return paginationData;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const getTotalPageForPaginationDB = async (data) => {
+  const pageSize = parseInt(data.pageSize);
+  try {
+    const result = await DB.blog.count({
+      where: {
+        status: true,
+      },
+    });
+
+    const totalPages = parseInt((parseInt(result) + pageSize - 1) / pageSize);
+    return totalPages;
+  } catch (err) {
+    console.log(err);
+    return 0;
+  }
+};
+
 module.exports = {
   createBlogDB,
   getOneBlogByIdDB,
@@ -231,4 +295,6 @@ module.exports = {
   getBlogForTableDB,
   getTotalRowsForBlogTableDB,
   getSidebarDataDB,
+  getBlogForPaginationDB,
+  getTotalPageForPaginationDB,
 };
