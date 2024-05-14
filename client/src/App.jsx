@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Layout/Header";
 import HomePage from "./pages/common/HomePage";
@@ -13,11 +13,22 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "styled-components";
 import "react-quill/dist/quill.snow.css";
 import EmailVerificationPage from "./pages/common/EmailVerificationPage";
+import AuthContext from "./context/authContext";
+import Toastify from "./components/Toastify/Toastify";
+import { ToastContainer } from "react-bootstrap";
 
 const App = () => {
+  const { showToast } = useContext(AuthContext)
   return (
     <div className="container">
       <BrowserRouter>
+        {showToast &&
+          <ToastContainer position="top-center">
+
+            <Toastify value={true}></Toastify>
+
+          </ToastContainer>
+        }
         <Header />
         <Routes>
           <Route path="/" Component={HomePage} />
