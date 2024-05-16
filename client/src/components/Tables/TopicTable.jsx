@@ -15,11 +15,11 @@ const TopicTable = () => {
   const [totalRows, setTotalRows] = useState(0);
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("");
-  const [searchText, setSearchText] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, searchText]);
+  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, search]);
 
   const fetchData = () => {
     try {
@@ -29,7 +29,7 @@ const TopicTable = () => {
         row: paginationTotalRows,
         sortCol: sortColumn,
         sortDir: sortDirection,
-        search: searchText,
+        search: search,
       };
       axiosInstance
         .get("/api/admin/topic/table", {
@@ -61,7 +61,7 @@ const TopicTable = () => {
   };
 
   const handleSearchChanges = (e) => {
-    setSearchText(e.target.value);
+    setSearch(e.target.value);
   };
 
   const handleDeleteTopic = (id) => {
@@ -124,7 +124,7 @@ const TopicTable = () => {
           <Form.Control
             type="search"
             placeholder="Search"
-            value={searchText}
+            value={search}
             onChange={handleSearchChanges}
             className="me-2"
             aria-label="Search"

@@ -67,8 +67,10 @@ const deleteBlogDB = async (id) => {
 
 const getBlogForTableDB = async (data) => {
   try {
-    const { search, sortCol, sortDir, topic, startDate, endDate, status } =
-      data;
+    const { search, sortCol, sortDir, topicId, startDate, endDate } = data;
+    const status =
+      data.status === "true" ? true : data.status === "false" ? false : null;
+    console.log(status);
     const row = parseInt(data.row);
     const page = parseInt(data.page);
     const offSet = parseInt(row * (page - 1));
@@ -111,8 +113,8 @@ const getBlogForTableDB = async (data) => {
               },
             ],
           },
-          status && { status: status },
-          topic && { topicId: topic },
+          status !== null && { status: status },
+          topicId && { topicId: topicId },
           startDate && { createdAt: { gte: new Date(startDate) } },
           endDate && { createdAt: { lte: new Date(endDate) } },
         ].filter(Boolean),
@@ -150,8 +152,9 @@ const getBlogForTableDB = async (data) => {
 
 const getTotalRowsForBlogTableDB = async (data) => {
   try {
-    const { search, topic, startDate, endDate, status } = data;
-
+    const { search, topicId, startDate, endDate } = data;
+    const status =
+      data.status === "true" ? true : data.status === "false" ? false : null;
     const result = await DB.blog.count({
       where: {
         AND: [
@@ -181,8 +184,8 @@ const getTotalRowsForBlogTableDB = async (data) => {
               },
             ],
           },
-          status && { status: status },
-          topic && { topicId: topic },
+          status !== null && { status: status },
+          topicId && { topicId: topicId },
           startDate && { createdAt: { gte: new Date(startDate) } },
           endDate && { createdAt: { lte: new Date(endDate) } },
         ].filter(Boolean),
