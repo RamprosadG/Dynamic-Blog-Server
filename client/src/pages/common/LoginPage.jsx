@@ -21,7 +21,6 @@ const LoginPage = () => {
       try {
         axiosInstance.post("/api/login", values).then((response) => {
           if (response.data.success) {
-            setShowToast(true)
             setErrorMessage("");
             setIsLoggedIn(true);
             setUserInfo(response.data.data);

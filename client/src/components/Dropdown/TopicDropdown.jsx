@@ -2,18 +2,8 @@ import React, { useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
 import axiosInstance from "../../api/axiosInstance";
 
-const TopicDropdown = ({ value, updateTopic }) => {
+const TopicDropdown = ({ formik }) => {
   const [options, setOptions] = useState([]);
-  const [selectedTopic, setSelectedTopic] = useState("");
-
-  useEffect(() => {
-    setSelectedTopic(value);
-  }, [value]);
-
-  const handleTopicChange = (event) => {
-    setSelectedTopic(event.target.value);
-    updateTopic(event.target.value);
-  };
 
   useEffect(() => {
     axiosInstance
@@ -29,9 +19,11 @@ const TopicDropdown = ({ value, updateTopic }) => {
 
   return (
     <Form.Select
-      id="topic-select"
-      onChange={handleTopicChange}
-      value={selectedTopic}
+      id="topicId"
+      name="topicId"
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      value={formik.values.topicId}
     >
       <option id="option" key={"option"} value={""}>
         Select topic
