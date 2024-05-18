@@ -1,4 +1,5 @@
 const DB = require("../configs/dbConfig");
+const moment = require("moment");
 
 const createBlogDB = async (data) => {
   try {
@@ -70,7 +71,6 @@ const getBlogForTableDB = async (data) => {
     const { search, sortCol, sortDir, topicId, startDate, endDate } = data;
     const status =
       data.status === "true" ? true : data.status === "false" ? false : null;
-    console.log(status);
     const row = parseInt(data.row);
     const page = parseInt(data.page);
     const offSet = parseInt(row * (page - 1));
@@ -138,8 +138,10 @@ const getBlogForTableDB = async (data) => {
       title: item.title,
       author: item.user.username,
       topic: item.topic.name,
-      date: item.createdAt,
-      publishDate: item.publishDate,
+      date: item.createdAt ? moment(item.createdAt).format("LLL") : null,
+      publishDate: item.publishDate
+        ? moment(item.publishDate).format("LLL")
+        : null,
       status: item.status ? "Published" : "Not published",
     }));
 
