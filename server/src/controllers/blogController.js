@@ -1,3 +1,4 @@
+const { date } = require("zod");
 const {
   getOneBlogByTitleDB,
   createBlogDB,
@@ -7,6 +8,8 @@ const {
   deleteBlogDB,
   getBlogForTableDB,
   getTotalRowsForBlogTableDB,
+  publishBlogDB,
+  unpublishBlogDB,
 } = require("../services/blogService");
 
 const createBlog = async (req, res) => {
@@ -60,7 +63,7 @@ const getOneBlogById = async (req, res) => {
 
 const getAllBlog = async (req, res) => {
   try {
-    const result = await getAllBlogDB();
+    const result = await getAllBlogDB(req.params);
 
     if (!result) {
       return res.json({ message: "Something went wrong.", success: false });
@@ -90,6 +93,56 @@ const updateBlog = async (req, res) => {
       return res.json({ message: "Something went wrong.", success: false });
     }
     res.json({ message: "Blog is updated successfully.", success: true });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
+  }
+};
+
+const publishBlog = async (req, res) => {
+  try {
+    const id = req?.params?.id;
+
+    if (!id) {
+      return res.json({ message: "Id is required.", success: false });
+    }
+    const date = new Date();
+    const updatedData = {
+      publishDate: date,
+      status: true,
+    };
+
+    const result = publishBlogDB(id, updatedData);
+
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+    res.json({ message: "Blog is published successfully.", success: true });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Something went wrong.", success: false });
+  }
+};
+
+const unpublishBlog = async (req, res) => {
+  try {
+    const id = req?.params?.id;
+
+    if (!id) {
+      return res.json({ message: "Id is required.", success: false });
+    }
+
+    const updatedData = {
+      publishDate: null,
+      status: false,
+    };
+
+    const result = unpublishBlogDB(id, updatedData);
+
+    if (!result) {
+      return res.json({ message: "Something went wrong.", success: false });
+    }
+    res.json({ message: "Blog is unpublished successfully.", success: true });
   } catch (err) {
     console.log(err);
     res.json({ message: "Something went wrong.", success: false });
@@ -135,6 +188,8 @@ module.exports = {
   getOneBlogById,
   getAllBlog,
   updateBlog,
+  publishBlog,
+  unpublishBlog,
   deleteBlog,
   getBlogForTable,
 };

@@ -112,25 +112,20 @@ const handleRegister = async (req, res) => {
 const verifyRegister = async (req, res) => {
   try {
     const token = req.params.token;
-    console.log(req.params);
-    console.log(token);
 
     if (!token) {
       return res.json({ message: "Token is requited.", success: false });
     }
 
     const { verificationCode } = req.body;
-    console.log(verificationCode);
 
     const decode = jwt.verify(token, SMTP_SECRET_KEY);
-    console.log(decode);
 
     if (!decode) {
       return res.json({ message: "Invalid token.", success: false });
     }
 
     const { password } = decode;
-    console.log(decode, verificationCode);
 
     if (decode.verificationCode !== verificationCode) {
       return res.json({ message: "Wrong code.", success: false });
@@ -142,7 +137,6 @@ const verifyRegister = async (req, res) => {
       email: decode.email,
       password: hashedPassword,
     };
-    console.log(userData);
     const result = await createUserDB(userData);
 
     if (!result) {

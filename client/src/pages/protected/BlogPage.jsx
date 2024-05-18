@@ -52,7 +52,6 @@ const BlogPage = () => {
     },
     validationSchema: blogSchema,
     onSubmit: (values) => {
-      console.log(values);
       !id ? handleAddBlog(values) : handleUpdateBlog(values);
     },
   });
