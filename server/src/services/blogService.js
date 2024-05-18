@@ -1,3 +1,4 @@
+const { date } = require("zod");
 const DB = require("../configs/dbConfig");
 const moment = require("moment");
 
@@ -33,9 +34,19 @@ const getOneBlogByTitleDB = async (title) => {
   }
 };
 
-const getAllBlogDB = async () => {
+const getAllBlogDB = async (data) => {
   try {
-    const res = await DB.blog.findMany();
+    const { option } = data;
+
+    const res = await DB.blog.findMany({
+      where: {
+        AND: [
+          option && {
+            status: option === "publish" ? true : false,
+          },
+        ].filter(Boolean),
+      },
+    });
     return res;
   } catch (err) {
     console.log(err);
@@ -44,6 +55,32 @@ const getAllBlogDB = async () => {
 };
 
 const updateBlogDB = async (id, updatedData) => {
+  try {
+    const data = await DB.blog.update({
+      where: { id },
+      data: updatedData,
+    });
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const publishBlogDB = async (id, updatedData) => {
+  try {
+    const data = await DB.blog.update({
+      where: { id },
+      data: updatedData,
+    });
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const unpublishBlogDB = async (id, updatedData) => {
   try {
     const data = await DB.blog.update({
       where: { id },
@@ -295,6 +332,8 @@ module.exports = {
   getOneBlogByTitleDB,
   getAllBlogDB,
   updateBlogDB,
+  publishBlogDB,
+  unpublishBlogDB,
   deleteBlogDB,
   getBlogForTableDB,
   getTotalRowsForBlogTableDB,

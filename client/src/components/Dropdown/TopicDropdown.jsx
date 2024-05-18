@@ -9,8 +9,7 @@ const TopicDropdown = ({ formik }) => {
     axiosInstance
       .get("/api/admin/topic/all")
       .then((response) => {
-        const topic = response.data.data;
-        setOptions(topic);
+        setOptions(response.data.data);
       })
       .catch(() => {
         console.log("server error");

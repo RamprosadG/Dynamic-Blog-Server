@@ -5,7 +5,6 @@ import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import ReactQuill from "react-quill";
 import { Form } from "react-bootstrap";
 import axiosInstance from "../../api/axiosInstance";
-import moment from "moment";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);
@@ -40,10 +39,10 @@ const HomePage = () => {
           params: formData,
         })
         .then((response) => {
-          console.log(response.data.data);
+          //have to update later
         });
     } catch (error) {
-      console.log("There is an error to fetch sidebar data");
+      console.log("Eerror to fetch sidebar data");
     }
   };
 
@@ -60,7 +59,7 @@ const HomePage = () => {
           setSidebarData(response.data.data);
         });
     } catch (error) {
-      console.log("There is an error to fetch sidebar data");
+      console.log("Error to fetch sidebar data");
     }
   };
 
@@ -82,7 +81,6 @@ const HomePage = () => {
     );
 
     if (isSelected && guid.test(itemId)) {
-      console.log(itemId);
       setLastSelectedItem(itemId);
     }
   };

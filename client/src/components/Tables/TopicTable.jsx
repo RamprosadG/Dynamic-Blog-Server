@@ -41,7 +41,7 @@ const TopicTable = () => {
           setLoading(false);
         });
     } catch (error) {
-      console.log("There is an error to fetch topic");
+      console.log("Error to fetch topic");
       setData([]);
       setLoading(false);
     }

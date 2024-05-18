@@ -16,19 +16,19 @@ import EmailVerificationPage from "./pages/common/EmailVerificationPage";
 import AuthContext from "./context/authContext";
 import Toastify from "./components/Toastify/Toastify";
 import { ToastContainer } from "react-bootstrap";
+import PublishBlogPage from "./pages/admin/PublishBlogPage";
+import UnpublishBlogPage from "./pages/admin/UnpublishBlogPage";
 
 const App = () => {
-  const { showToast } = useContext(AuthContext)
+  const { showToast } = useContext(AuthContext);
   return (
     <div className="container">
       <BrowserRouter>
-        {showToast &&
+        {showToast && (
           <ToastContainer position="top-center">
-
             <Toastify value={true}></Toastify>
-
           </ToastContainer>
-        }
+        )}
         <Header />
         <Routes>
           <Route path="/" Component={HomePage} />
@@ -36,6 +36,9 @@ const App = () => {
           <Route path="/register" Component={RegisterPage} />
           <Route path="/admin" Component={AdminPage} />
           <Route path="/blog/:id?" Component={BlogPage} />
+          <Route path="/publish/blog" Component={PublishBlogPage} />
+          <Route path="/unpublish/blog" Component={UnpublishBlogPage} />
+
           <Route path="/topic/:id?" Component={TopicPage} />
           <Route path="/verify/:token?" Component={EmailVerificationPage} />
           <Route path="*" Component={ErrorPage} />
