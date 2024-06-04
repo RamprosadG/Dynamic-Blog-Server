@@ -224,6 +224,7 @@ const BlogTable = () => {
               type="search"
               name="serach"
               id="search"
+              placeholder="Search"
               onChange={handleSearchChandge}
               value={search}
             />
