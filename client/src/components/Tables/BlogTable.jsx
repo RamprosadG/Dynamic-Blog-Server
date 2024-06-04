@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import DataTable from "react-data-table-component";
 import TopicDropdown from "../Dropdown/TopicDropdown";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -7,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import TableCustomStyles from "./TableCustomStyles";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
+import { useFormik } from "formik";
 
 const BlogTable = () => {
   const [data, setData] = useState([]);
@@ -16,34 +17,37 @@ const BlogTable = () => {
   const [paginationTotalRows, setPaginationTotalRows] = useState(10);
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("");
-  const [searchText, setSearchText] = useState("");
-  const [topic, setTopic] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [status, setStatus] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetchData();
-  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, searchText]);
+    fetchData(formik.values);
+  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, search]);
 
-  const fetchData = () => {
+  const formik = useFormik({
+    initialValues: {
+      topicId: "",
+      startDate: "",
+      endDate: "",
+      status: "",
+    },
+    onSubmit: (values) => {
+      fetchData(values);
+    },
+  });
+
+  const fetchData = (values) => {
     try {
       setLoading(true);
-      const formData = {
-        page: currentPage,
-        row: paginationTotalRows,
-        sortCol: sortColumn,
-        sortDir: sortDirection,
-        search: searchText,
-        startDate: startDate,
-        endDate: endDate,
-        topic: topic,
-        status: status,
-      };
-
-      axios
-        .get("http://localhost:5000/api/admin/blog/table", {
-          params: formData,
+      axiosInstance
+        .get("/api/admin/blog/table", {
+          params: {
+            ...values,
+            page: currentPage,
+            row: paginationTotalRows,
+            sortCol: sortColumn,
+            sortDir: sortDirection,
+            search: search,
+          },
         })
         .then((response) => {
           if (response.data.success) {
@@ -56,27 +60,6 @@ const BlogTable = () => {
       console.log("Error to fetch blogs");
       setLoading(false);
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetchData();
-  };
-
-  const handleStatusChange = (e) => {
-    setStatus(e.target.value);
-  };
-
-  const handleTopicChange = (newTopic) => {
-    setTopic(newTopic);
-  };
-
-  const handleStartDateChange = (e) => {
-    setStartDate(e.target.value);
-  };
-
-  const handleEndDateChange = (e) => {
-    setEndDate(e.target.value);
   };
 
   const handlePageChange = async (page) => {
@@ -92,13 +75,13 @@ const BlogTable = () => {
     setSortDirection(direction);
   };
 
-  const handleSearchChange = (e) => {
-    setSearchText(e.target.value);
+  const handleSearchChandge = (e) => {
+    setSearch(e.target.value);
   };
 
-  const handleDeleteBlog = async (id) => {
-    await axios
-      .delete(`http://localhost:5000/api/admin/blog/remove/${id}`)
+  const handleDeleteBlog = (id) => {
+    axiosInstance
+      .delete(`/api/admin/blog/remove/${id}`)
       .then((response) => {
         alert(response.data.message);
         response.data.success && fetchData();
@@ -175,48 +158,57 @@ const BlogTable = () => {
 
   return (
     <>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={formik.handleSubmit}>
         <Row>
           <Col xs={12} sm={6} md={2}>
             <Form.Label>Topic</Form.Label>
-            <TopicDropdown updateTopic={handleTopicChange} value={topic} />
+            <TopicDropdown formik={formik} />
           </Col>
           <Col xs={12} sm={6} md={2}>
             <Form.Label>Status</Form.Label>
-            <select
-              className="form-select"
-              id="blog-table-status"
-              onChange={handleStatusChange}
-              value={status}
+            <Form.Select
+              name="status"
+              id="status"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.status}
             >
-              <option id="status" value="">
+              <option id="status" key="status" value="">
                 Select status
               </option>
-              <option id="published" value="true">
+              <option key="published" value={true}>
                 Published
               </option>
-              <option id="not-published" value="false">
+              <option key="not-published" value={false}>
                 Not published
               </option>
-            </select>
+            </Form.Select>
           </Col>
           <Col xs={12} sm={6} md={3}>
-            <Form.Label>Start date</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              id="blog-table-start-date"
-              value={startDate}
-              onChange={handleStartDateChange}
-            />
+            <Form.Group>
+              <Form.Label>Start date</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                name="startDate"
+                id="startDate"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.startDate}
+              />
+            </Form.Group>
           </Col>
           <Col xs={12} sm={6} md={3}>
-            <Form.Label>End date</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              id="blog-table-end-date"
-              value={endDate}
-              onChange={handleEndDateChange}
-            />
+            <Form.Group>
+              <Form.Label>End date</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                name="endDate"
+                id="endDate"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.endDate}
+              />
+            </Form.Group>
           </Col>
           <Col xs={12} sm={6} md={2}>
             <div className="table-button-generate">
@@ -230,12 +222,11 @@ const BlogTable = () => {
           <Col xs={6} sm={3}>
             <Form.Control
               type="search"
-              id="blog-table-search"
+              name="serach"
+              id="search"
               placeholder="Search"
-              value={searchText}
-              onChange={handleSearchChange}
-              className="me-2"
-              aria-label="Search"
+              onChange={handleSearchChandge}
+              value={search}
             />
           </Col>
         </Row>

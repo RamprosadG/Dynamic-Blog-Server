@@ -1,7 +1,10 @@
 const {
   createBlog,
   getOneBlogById,
+  getAllBlog,
   updateBlog,
+  publishBlog,
+  unpublishBlog,
   deleteBlog,
   getBlogForTable,
 } = require("../controllers/blogController");
@@ -38,11 +41,14 @@ adminRouter.delete("/topic/remove/:id", deleteTopic);
 
 adminRouter.post("/blog/create", validateRequest(createBlogSchema), createBlog);
 adminRouter.get("/blog/single/:id", getOneBlogById);
+adminRouter.get("/blog/all/:option?", getAllBlog);
 adminRouter.put(
   "/blog/update/:id",
   validateRequest(updateBlogSchema),
   updateBlog
 );
+adminRouter.patch("/blog/update/publish/:id", publishBlog);
+adminRouter.patch("/blog/update/unpublish/:id", unpublishBlog);
 adminRouter.delete("/blog/remove/:id", deleteBlog);
 
 adminRouter.get("/blog/table", getBlogForTable);

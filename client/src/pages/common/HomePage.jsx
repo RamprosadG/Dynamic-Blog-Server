@@ -1,16 +1,18 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import ReactQuill from "react-quill";
 import { Form } from "react-bootstrap";
+import axiosInstance from "../../api/axiosInstance";
 
 const HomePage = () => {
   const [sidebarData, setSidebarData] = useState([]);
   const [lastSelectedItem, setLastSelectedItem] = useState("");
   const [blogData, setBlogData] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(7);
 
   useEffect(() => {
     fetchSidebarData();
@@ -22,27 +24,49 @@ const HomePage = () => {
     }
   }, [lastSelectedItem]);
 
+  useEffect(() => {
+    fetchPaginationData();
+  }, [page]);
+
+  const fetchPaginationData = () => {
+    const formData = {
+      page: page,
+      pageSize: pageSize,
+    };
+    try {
+      axiosInstance
+        .get("/api/user/blog/pagination", {
+          params: formData,
+        })
+        .then((response) => {
+          //have to update later
+        });
+    } catch (error) {
+      console.log("Eerror to fetch sidebar data");
+    }
+  };
+
   const fetchSidebarData = () => {
     const formData = {
       search: searchText,
     };
     try {
-      axios
-        .get("http://localhost:5000/api/user/sidebar", {
+      axiosInstance
+        .get("/api/user/sidebar", {
           params: formData,
         })
         .then((response) => {
           setSidebarData(response.data.data);
         });
     } catch (error) {
-      console.log("There is an error to fetch sidebar data");
+      console.log("Error to fetch sidebar data");
     }
   };
 
   const fetchBlogData = () => {
     try {
-      axios
-        .get(`http://localhost:5000/api/user/blog/single/${lastSelectedItem}`)
+      axiosInstance
+        .get(`/api/user/blog/single/${lastSelectedItem}`)
         .then((response) => {
           setBlogData(response.data.data);
         });
@@ -57,7 +81,6 @@ const HomePage = () => {
     );
 
     if (isSelected && guid.test(itemId)) {
-      console.log(itemId);
       setLastSelectedItem(itemId);
     }
   };

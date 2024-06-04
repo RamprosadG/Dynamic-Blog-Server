@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Col, Form, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import TableCustomStyles from "./TableCustomStyles";
+import axiosInstance from "../../api/axiosInstance";
 
 const TopicTable = () => {
   const [data, setData] = useState([]);
@@ -15,11 +15,11 @@ const TopicTable = () => {
   const [totalRows, setTotalRows] = useState(0);
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("");
-  const [searchText, setSearchText] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, searchText]);
+  }, [currentPage, paginationTotalRows, sortColumn, sortDirection, search]);
 
   const fetchData = () => {
     try {
@@ -29,10 +29,10 @@ const TopicTable = () => {
         row: paginationTotalRows,
         sortCol: sortColumn,
         sortDir: sortDirection,
-        search: searchText,
+        search: search,
       };
-      axios
-        .get("http://localhost:5000/api/admin/topic/table", {
+      axiosInstance
+        .get("/api/admin/topic/table", {
           params: formData,
         })
         .then((response) => {
@@ -41,7 +41,7 @@ const TopicTable = () => {
           setLoading(false);
         });
     } catch (error) {
-      console.log("There is an error to fetch topic");
+      console.log("Error to fetch topic");
       setData([]);
       setLoading(false);
     }
@@ -61,12 +61,12 @@ const TopicTable = () => {
   };
 
   const handleSearchChanges = (e) => {
-    setSearchText(e.target.value);
+    setSearch(e.target.value);
   };
 
   const handleDeleteTopic = (id) => {
-    axios
-      .delete(`http://localhost:5000/api/admin/topic/remove/${id}`)
+    axiosInstance
+      .delete(`/api/admin/topic/remove/${id}`)
       .then((response) => {
         alert(response.data.message);
         response.data.success && fetchData();
@@ -124,7 +124,7 @@ const TopicTable = () => {
           <Form.Control
             type="search"
             placeholder="Search"
-            value={searchText}
+            value={search}
             onChange={handleSearchChanges}
             className="me-2"
             aria-label="Search"
