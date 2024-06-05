@@ -1,4 +1,6 @@
+const { date } = require("zod");
 const DB = require("../configs/dbConfig");
+const moment = require("moment");
 
 const createBlogDB = async (data) => {
   try {
@@ -32,9 +34,19 @@ const getOneBlogByTitleDB = async (title) => {
   }
 };
 
-const getAllBlogDB = async () => {
+const getAllBlogDB = async (data) => {
   try {
-    const res = await DB.blog.findMany();
+    const { option } = data;
+
+    const res = await DB.blog.findMany({
+      where: {
+        AND: [
+          option && {
+            status: option === "publish" ? true : false,
+          },
+        ].filter(Boolean),
+      },
+    });
     return res;
   } catch (err) {
     console.log(err);
@@ -43,6 +55,32 @@ const getAllBlogDB = async () => {
 };
 
 const updateBlogDB = async (id, updatedData) => {
+  try {
+    const data = await DB.blog.update({
+      where: { id },
+      data: updatedData,
+    });
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const publishBlogDB = async (id, updatedData) => {
+  try {
+    const data = await DB.blog.update({
+      where: { id },
+      data: updatedData,
+    });
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const unpublishBlogDB = async (id, updatedData) => {
   try {
     const data = await DB.blog.update({
       where: { id },
@@ -67,8 +105,9 @@ const deleteBlogDB = async (id) => {
 
 const getBlogForTableDB = async (data) => {
   try {
-    const { search, sortCol, sortDir, topic, startDate, endDate, status } =
-      data;
+    const { search, sortCol, sortDir, topicId, startDate, endDate } = data;
+    const status =
+      data.status === "true" ? true : data.status === "false" ? false : null;
     const row = parseInt(data.row);
     const page = parseInt(data.page);
     const offSet = parseInt(row * (page - 1));
@@ -111,8 +150,8 @@ const getBlogForTableDB = async (data) => {
               },
             ],
           },
-          status && { status: status },
-          topic && { topicId: topic },
+          status !== null && { status: status },
+          topicId && { topicId: topicId },
           startDate && { createdAt: { gte: new Date(startDate) } },
           endDate && { createdAt: { lte: new Date(endDate) } },
         ].filter(Boolean),
@@ -136,8 +175,10 @@ const getBlogForTableDB = async (data) => {
       title: item.title,
       author: item.user.username,
       topic: item.topic.name,
-      date: item.createdAt,
-      publishDate: item.publishDate,
+      date: item.createdAt ? moment(item.createdAt).format("LLL") : null,
+      publishDate: item.publishDate
+        ? moment(item.publishDate).format("LLL")
+        : null,
       status: item.status ? "Published" : "Not published",
     }));
 
@@ -150,8 +191,9 @@ const getBlogForTableDB = async (data) => {
 
 const getTotalRowsForBlogTableDB = async (data) => {
   try {
-    const { search, topic, startDate, endDate, status } = data;
-
+    const { search, topicId, startDate, endDate } = data;
+    const status =
+      data.status === "true" ? true : data.status === "false" ? false : null;
     const result = await DB.blog.count({
       where: {
         AND: [
@@ -181,8 +223,8 @@ const getTotalRowsForBlogTableDB = async (data) => {
               },
             ],
           },
-          status && { status: status },
-          topic && { topicId: topic },
+          status !== null && { status: status },
+          topicId && { topicId: topicId },
           startDate && { createdAt: { gte: new Date(startDate) } },
           endDate && { createdAt: { lte: new Date(endDate) } },
         ].filter(Boolean),
@@ -202,10 +244,17 @@ const getSidebarDataDB = async (data) => {
 
     const result = await DB.blog.findMany({
       where: {
-        title: {
-          contains: search ? search.toLowerCase() : "",
-          mode: "insensitive",
-        },
+        AND: [
+          {
+            status: true,
+          },
+          search && {
+            title: {
+              contains: search.toLowerCase(),
+              mode: "insensitive",
+            },
+          },
+        ].filter(Boolean),
       },
       select: {
         id: true,
@@ -221,14 +270,74 @@ const getSidebarDataDB = async (data) => {
   }
 };
 
+const getBlogForPaginationDB = async (data) => {
+  try {
+    const page = parseInt(data.page);
+    const pageSize = parseInt(data.pageSize);
+    const offSet = parseInt((page - 1) * pageSize);
+
+    const result = await DB.blog.findMany({
+      where: {
+        status: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        publishDate: true,
+        topic: { select: { name: true } },
+        user: { select: { username: true } },
+      },
+      orderBy: { publishDate: "desc" },
+      take: pageSize,
+      skip: offSet,
+    });
+
+    const paginationData = result?.map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      author: item.user.username,
+      topic: item.topic.name,
+      publishDate: item.publishDate,
+    }));
+
+    return paginationData;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const getTotalPageForPaginationDB = async (data) => {
+  const pageSize = parseInt(data.pageSize);
+  try {
+    const result = await DB.blog.count({
+      where: {
+        status: true,
+      },
+    });
+
+    const totalPages = parseInt((parseInt(result) + pageSize - 1) / pageSize);
+    return totalPages;
+  } catch (err) {
+    console.log(err);
+    return 0;
+  }
+};
+
 module.exports = {
   createBlogDB,
   getOneBlogByIdDB,
   getOneBlogByTitleDB,
   getAllBlogDB,
   updateBlogDB,
+  publishBlogDB,
+  unpublishBlogDB,
   deleteBlogDB,
   getBlogForTableDB,
   getTotalRowsForBlogTableDB,
   getSidebarDataDB,
+  getBlogForPaginationDB,
+  getTotalPageForPaginationDB,
 };
